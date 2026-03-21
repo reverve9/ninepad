@@ -19,6 +19,10 @@ struct SettingsView: View {
                 } else {
                     memberOrgInfo
                 }
+
+                Divider().background(AppTheme.border)
+
+                GitSettingsView()
             }
         }
         .frame(maxWidth: 340, maxHeight: 500)

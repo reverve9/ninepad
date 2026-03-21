@@ -32,6 +32,9 @@
 		A1000023 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000023; };
 		A1000024 /* OrgSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000024; };
 		A1000025 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000025; };
+		A1000026 /* GitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000026; };
+		A1000027 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000027; };
+		A1000028 /* GitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000028; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +62,9 @@
 		A2000023 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A2000024 /* OrgSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrgSettingsView.swift; sourceTree = "<group>"; };
 		A2000025 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		A2000026 /* GitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitService.swift; sourceTree = "<group>"; };
+		A2000027 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		A2000028 /* GitSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitSettingsView.swift; sourceTree = "<group>"; };
 		A2000099 /* NinePAD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NinePAD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000101 /* NinePAD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NinePAD.entitlements; sourceTree = "<group>"; };
@@ -128,6 +134,8 @@
 				A2000019 /* SnippetService.swift */,
 				A2000021 /* InvitationService.swift */,
 				A2000022 /* OrgService.swift */,
+				A2000026 /* GitService.swift */,
+				A2000027 /* KeychainHelper.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -185,6 +193,7 @@
 				A2000023 /* SettingsView.swift */,
 				A2000024 /* OrgSettingsView.swift */,
 				A2000025 /* ProfileView.swift */,
+				A2000028 /* GitSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -295,6 +304,9 @@
 				A1000023 /* SettingsView.swift in Sources */,
 				A1000024 /* OrgSettingsView.swift in Sources */,
 				A1000025 /* ProfileView.swift in Sources */,
+				A1000026 /* GitService.swift in Sources */,
+				A1000027 /* KeychainHelper.swift in Sources */,
+				A1000028 /* GitSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

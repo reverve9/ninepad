@@ -5,6 +5,7 @@ struct MemoRowView: View {
     var onUpdate: (String, String) -> Void
     var onDelete: () -> Void
     var onPinToSnippet: () -> Void
+    var onPush: () -> Void
 
     @State private var isExpanded = false
     @State private var isEditing = false
@@ -43,6 +44,14 @@ struct MemoRowView: View {
                 // Hover 시 액션 버튼들
                 if isHovering || isExpanded {
                     if !isEditing {
+                        Button(action: { onPush() }) {
+                            Image(systemName: "arrow.up.to.line")
+                                .font(.system(size: 10))
+                                .foregroundColor(AppTheme.accent.opacity(0.7))
+                        }
+                        .buttonStyle(.plain)
+                        .help("Git 푸시")
+
                         Button(action: { onPinToSnippet() }) {
                             Image(systemName: "pin")
                                 .font(.system(size: 10))

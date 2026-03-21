@@ -7,19 +7,20 @@ NinePAD/
 ├── _DEV/
 │   ├── HANDOFF/
 │   │   ├── HANDOFF.md             ← 이 파일 (인덱스)
-│   │   ├── PHASE1.md              ← 프로젝트 기초 + Supabase
-│   │   ├── PHASE2.md              ← 메인 UI 골격
-│   │   ├── PHASE3.md              ← 메모 CRUD + Realtime
-│   │   ├── PHASE4.md              ← 스니펫 CRUD + 클립보드
-│   │   └── PHASE5.md              ← Org 관리 + 초대
+│   │   ├── PHASE1.md ~ PHASE6.md
+│   ├── PROMPTS/                   ← 빌드 에러 등 프롬프트 파일
 │   ├── SCREENSHOTS/
-│   └── SEED/
-│       └── schema.sql
+│   ├── SEED/
+│   │   ├── schema.sql
+│   │   └── DEPLOY_CHECKLIST.md
+│   └── scripts/
+│       ├── build_dmg.sh
+│       └── ExportOptions.plist
 ├── NinePAD.xcodeproj/
 ├── NinePAD/
 │   ├── App/
 │   │   ├── NinePADApp.swift       ← @main, MenuBarExtra + 단축키 + URL Scheme
-│   │   └── ContentView.swift      ← 로그인/메인 분기
+│   │   └── ContentView.swift
 │   ├── Views/
 │   │   ├── Auth/
 │   │   │   ├── LoginView.swift
@@ -35,14 +36,17 @@ NinePAD/
 │   │   └── Settings/
 │   │       ├── SettingsView.swift
 │   │       ├── OrgSettingsView.swift
-│   │       └── ProfileView.swift
+│   │       ├── ProfileView.swift
+│   │       └── GitSettingsView.swift
 │   ├── Services/
 │   │   ├── SupabaseManager.swift
 │   │   ├── AuthService.swift
 │   │   ├── MemoService.swift
 │   │   ├── SnippetService.swift
 │   │   ├── InvitationService.swift
-│   │   └── OrgService.swift
+│   │   ├── OrgService.swift
+│   │   ├── GitService.swift
+│   │   └── KeychainHelper.swift
 │   ├── Models/
 │   │   └── AppModels.swift
 │   ├── Config/
@@ -72,12 +76,14 @@ NinePAD/
 | 3 | 완료 | [PHASE3.md](PHASE3.md) | 메모 CRUD + Supabase 실시간 동기화 |
 | 4 | 완료 | [PHASE4.md](PHASE4.md) | 스니펫 CRUD + 클립보드 + 메모→스니펫 |
 | 5 | 완료 | [PHASE5.md](PHASE5.md) | Org 관리 + 초대 링크 |
-| 6 | 대기 | — | Git 푸시 + .dmg 배포 |
+| 6 | 완료 | [PHASE6.md](PHASE6.md) | Git 푸시 + .dmg 배포 |
 
 ## _DEV 폴더 규칙
 
 | 폴더 | 용도 |
 |---|---|
 | `_DEV/HANDOFF/` | 핸드오프 문서 (페이즈별 분리) |
+| `_DEV/PROMPTS/` | 빌드 에러 수정 등 프롬프트 파일 |
 | `_DEV/SCREENSHOTS/` | UI 스크린샷 공유 |
-| `_DEV/SEED/` | SQL 스키마, 시드 데이터, 마이그레이션 |
+| `_DEV/SEED/` | SQL 스키마, 시드 데이터, 배포 체크리스트 |
+| `_DEV/scripts/` | 빌드/배포 스크립트 |

@@ -8,6 +8,10 @@ struct MemoZoneView: View {
     @State private var showSettings = false
     @State private var newTitle = ""
     @State private var newContent = ""
+    @State private var pushingMemoId: UUID?
+    @State private var pushedMemoId: UUID?
+    @State private var isPushingAll = false
+    @State private var pushAllDone = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -59,6 +63,9 @@ struct MemoZoneView: View {
                             },
                             onPinToSnippet: {
                                 Task { await snippetViewModel.createFromMemo(title: memo.title, content: memo.content) }
+                            },
+                            onPush: {
+                                pushMemo(memo)
                             }
                         )
                     }
@@ -177,6 +184,22 @@ struct MemoZoneView: View {
 
             Spacer()
 
+            // 전체 푸시 (admin만)
+            if authService.currentUser?.role == .admin {
+                Button(action: pushAllMemos) {
+                    if isPushingAll {
+                        ProgressView().controlSize(.mini)
+                    } else {
+                        Image(systemName: pushAllDone ? "checkmark" : "arrow.up.to.line")
+                            .font(.system(size: 11))
+                            .foregroundColor(pushAllDone ? AppTheme.success : AppTheme.accent)
+                    }
+                }
+                .buttonStyle(.plain)
+                .disabled(isPushingAll)
+                .help("전체 메모 Git 푸시")
+            }
+
             Button(action: { showSettings = true }) {
                 Image(systemName: "gearshape")
                     .font(.system(size: 12))
@@ -197,5 +220,37 @@ struct MemoZoneView: View {
         newTitle = ""
         newContent = ""
         showNewMemo = false
+    }
+
+    private func pushMemo(_ memo: Memo) {
+        pushingMemoId = memo.id
+        Task {
+            do {
+                try await GitService.pushMemo(memo)
+                pushedMemoId = memo.id
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    pushedMemoId = nil
+                }
+            } catch {
+                viewModel.errorMessage = error.localizedDescription
+            }
+            pushingMemoId = nil
+        }
+    }
+
+    private func pushAllMemos() {
+        isPushingAll = true
+        Task {
+            do {
+                try await GitService.pushAllMemos(viewModel.memos)
+                pushAllDone = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    pushAllDone = false
+                }
+            } catch {
+                viewModel.errorMessage = error.localizedDescription
+            }
+            isPushingAll = false
+        }
     }
 }
