@@ -1,15 +1,15 @@
-# NinePAD — Phase 1 Handoff
+# NinePAD — Handoff
 
 ## 프로젝트 구조
 
 ```
 NinePAD/
-├── _DEV/                          ← 개발 공유 리소스
+├── _DEV/
 │   ├── HANDOFF/
 │   │   └── HANDOFF.md             ← 이 파일
-│   ├── SCREENSHOTS/               ← 스크린샷 공유 폴더
+│   ├── SCREENSHOTS/               ← 스크린샷 공유
 │   └── SEED/
-│       └── schema.sql             ← Supabase 전체 스키마 + RLS
+│       └── schema.sql             ← Supabase 스키마 + RLS
 ├── NinePAD.xcodeproj/
 ├── NinePAD/
 │   ├── App/
@@ -17,68 +17,61 @@ NinePAD/
 │   │   └── ContentView.swift      ← 로그인/메인 분기
 │   ├── Views/Auth/
 │   │   ├── LoginView.swift        ← 이메일+비밀번호 로그인
-│   │   ├── SignUpView.swift       ← 관리자/초대 가입 UI
-│   │   └── AuthViewModel.swift    ← 확장용 예약 파일
+│   │   ├── SignUpView.swift       ← 관리자/멤버/초대 가입 UI
+│   │   └── AuthViewModel.swift    ← 확장용 예약
 │   ├── Services/
-│   │   ├── SupabaseManager.swift  ← Supabase 싱글턴 클라이언트
-│   │   └── AuthService.swift      ← 로그인/가입/로그아웃 로직
+│   │   ├── SupabaseManager.swift  ← Supabase 싱글턴
+│   │   └── AuthService.swift      ← 인증 로직 전체
 │   ├── Models/
-│   │   └── AppModels.swift        ← Organization, AppUser, Memo, Snippet, Invitation
+│   │   └── AppModels.swift        ← 전체 데이터 모델
 │   ├── Config/
-│   │   └── Config.swift           ← Supabase URL/Key, 관리자 코드
+│   │   └── Config.swift           ← Supabase 연결 + 설정
 │   ├── Assets.xcassets/
 │   ├── Info.plist                  ← LSUIElement = YES
 │   └── NinePAD.entitlements       ← 샌드박스 + 네트워크
 ```
 
-- **타겟**: macOS 14+
-- **LSUIElement**: YES (Dock 아이콘 없음, 메뉴바만)
+- **타겟**: macOS 14+, SwiftUI, 메뉴바 전용 (Dock 아이콘 없음)
 - **의존성**: `supabase-swift` 2.0+ (SPM)
+- **Supabase**: `ujfjduravztyssnaewxb` 프로젝트 연결 완료
 
 ---
 
-## Phase 1 완료 항목
+## Phase 1 완료
 
-### 1. Supabase 스키마
-
-`_DEV/SEED/schema.sql` 파일을 Supabase SQL Editor에서 실행합니다.
+### Supabase 스키마 (`_DEV/SEED/schema.sql`)
 
 | 테이블 | 설명 |
 |---|---|
 | `organizations` | 조직 (멀티테넌트 루트) |
-| `users` | 사용자 (org_id로 조직 소속) |
+| `users` | 사용자 (org_id 소속, role: admin/member) |
 | `memos` | 메모 (org 격리) |
 | `snippets` | 스니펫 (org 격리) |
 | `invitations` | 초대 (토큰 기반, 7일 만료) |
 
-**RLS 정책 요약:**
-- 모든 테이블에 RLS 활성화
-- SELECT: 같은 org 멤버만 조회 가능
-- INSERT/UPDATE/DELETE: 본인 데이터만 조작 가능
-- 초대 생성: admin 역할만 가능
-- org 격리 완전 적용 (서브쿼리로 org_id 검증)
+- RLS 전체 적용, org 격리 완전 적용
+- SQL 실행 순서: 테이블 → 트리거 → RLS → 정책 → 인덱스
 
-### 2. 인증 흐름
+### 인증 흐름
 
 | 시나리오 | 흐름 |
 |---|---|
-| **관리자 가입** | 이메일+비밀번호+조직이름+관리자코드 → Org 생성 → users에 admin 등록 |
-| **멤버 가입** | 초대 토큰+이메일+비밀번호 → 토큰 검증 → users에 member 등록 → 초대 수락 처리 |
-| **로그인** | 이메일+비밀번호 → 세션 획득 → users 프로필 로드 |
+| **관리자 가입** | 이메일 + 비밀번호 + 조직이름 + 인증코드(`bridge_nine`) → Org 생성 + admin 등록 |
+| **멤버 직접가입** | (DEBUG 전용) 이메일 + 비밀번호 + 조직이름 → 초대 없이 member 등록 |
+| **초대 가입** | 초대 토큰 + 이메일 + 비밀번호 → 토큰 검증 → member 등록 |
+| **로그인** | 이메일 + 비밀번호 → 세션 획득 → 프로필 로드 |
 
----
+### 개발 모드 (`devMode`)
 
-## 시작 전 설정
+- `DEBUG` 빌드: 멤버 직접가입 탭 노출 (초대 없이 org 이름만으로 가입)
+- `Release` 빌드: 탭 숨김, 초대 링크로만 멤버 가입 가능
 
-1. **Supabase 프로젝트 생성** 후 `NinePAD/Config/Config.swift`에 값 입력:
-   ```swift
-   static let supabaseURL = "https://YOUR_PROJECT.supabase.co"
-   static let supabaseAnonKey = "YOUR_ANON_KEY"
-   ```
+### 계정 구조
 
-2. **SQL 실행**: `_DEV/SEED/schema.sql` → Supabase Dashboard → SQL Editor에서 실행
-
-3. **Xcode에서 열기**: `NinePAD.xcodeproj` → SPM 패키지 resolve → 빌드
+| 계정 | 역할 | 비고 |
+|---|---|---|
+| `bridge_nine` | 관리자 인증코드 | Org 생성 권한 |
+| `reverve9` | 개인 계정 | 개발 중 멤버 직접가입으로 참여 |
 
 ---
 
@@ -88,7 +81,7 @@ NinePAD/
 |---|---|
 | `_DEV/HANDOFF/` | 핸드오프 문서 (페이즈별 업데이트) |
 | `_DEV/SCREENSHOTS/` | UI 스크린샷 공유 |
-| `_DEV/SEED/` | SQL 스키마, 시드 데이터, 마이그레이션 쿼리 |
+| `_DEV/SEED/` | SQL 스키마, 시드 데이터, 마이그레이션 |
 
 ---
 
