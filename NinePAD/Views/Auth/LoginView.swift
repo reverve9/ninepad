@@ -81,7 +81,7 @@ struct LoginView: View {
                 showSignUp = true
             }
         }
-        .onChange(of: authService.pendingInviteToken) { token in
+        .onChange(of: authService.pendingInviteToken) { _, token in
             if token != nil {
                 showSignUp = true
             }

@@ -67,14 +67,14 @@ final class SnippetService {
         onInsert: @escaping (Snippet) -> Void,
         onUpdate: @escaping (Snippet) -> Void,
         onDelete: @escaping (UUID) -> Void
-    ) async {
+    ) async throws {
         let channel = client.realtimeV2.channel("snippets-\(orgId.uuidString)")
 
-        let insertions = channel.postgresChange(InsertAction.self, table: "snippets", filter: "org_id=eq.\(orgId.uuidString)")
-        let updates = channel.postgresChange(UpdateAction.self, table: "snippets", filter: "org_id=eq.\(orgId.uuidString)")
-        let deletions = channel.postgresChange(DeleteAction.self, table: "snippets", filter: "org_id=eq.\(orgId.uuidString)")
+        let insertions = channel.postgresChange(InsertAction.self, schema: "public", table: "snippets", filter: .eq("org_id", value: orgId.uuidString))
+        let updates = channel.postgresChange(UpdateAction.self, schema: "public", table: "snippets", filter: .eq("org_id", value: orgId.uuidString))
+        let deletions = channel.postgresChange(DeleteAction.self, schema: "public", table: "snippets", filter: .eq("org_id", value: orgId.uuidString))
 
-        await channel.subscribe()
+        try await channel.subscribeWithError()
         self.channel = channel
 
         Task {

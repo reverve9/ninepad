@@ -89,7 +89,7 @@ final class SnippetViewModel: ObservableObject {
 
     private func startRealtime() async {
         guard let orgId else { return }
-        await snippetService.subscribe(
+        try? await snippetService.subscribe(
             orgId: orgId,
             onInsert: { [weak self] snippet in
                 Task { @MainActor in

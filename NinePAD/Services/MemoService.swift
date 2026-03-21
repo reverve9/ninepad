@@ -67,14 +67,14 @@ final class MemoService {
         onInsert: @escaping (Memo) -> Void,
         onUpdate: @escaping (Memo) -> Void,
         onDelete: @escaping (UUID) -> Void
-    ) async {
+    ) async throws {
         let channel = client.realtimeV2.channel("memos-\(orgId.uuidString)")
 
-        let insertions = channel.postgresChange(InsertAction.self, table: "memos", filter: "org_id=eq.\(orgId.uuidString)")
-        let updates = channel.postgresChange(UpdateAction.self, table: "memos", filter: "org_id=eq.\(orgId.uuidString)")
-        let deletions = channel.postgresChange(DeleteAction.self, table: "memos", filter: "org_id=eq.\(orgId.uuidString)")
+        let insertions = channel.postgresChange(InsertAction.self, schema: "public", table: "memos", filter: .eq("org_id", value: orgId.uuidString))
+        let updates = channel.postgresChange(UpdateAction.self, schema: "public", table: "memos", filter: .eq("org_id", value: orgId.uuidString))
+        let deletions = channel.postgresChange(DeleteAction.self, schema: "public", table: "memos", filter: .eq("org_id", value: orgId.uuidString))
 
-        await channel.subscribe()
+        try await channel.subscribeWithError()
         self.channel = channel
 
         Task {

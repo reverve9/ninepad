@@ -30,7 +30,7 @@ struct GitSettingsView: View {
                     .padding(.vertical, 6)
                     .background(AppTheme.inputBg)
                     .cornerRadius(6)
-                    .onChange(of: repoURL) { newValue in
+                    .onChange(of: repoURL) { _, newValue in
                         GitService.repoURL = newValue.isEmpty ? nil : newValue
                     }
             }
@@ -49,7 +49,7 @@ struct GitSettingsView: View {
                     .padding(.vertical, 6)
                     .background(AppTheme.inputBg)
                     .cornerRadius(6)
-                    .onChange(of: token) { newValue in
+                    .onChange(of: token) { _, newValue in
                         GitService.token = newValue.isEmpty ? nil : newValue
                     }
             }

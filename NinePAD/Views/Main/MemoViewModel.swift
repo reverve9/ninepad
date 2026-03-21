@@ -93,7 +93,7 @@ final class MemoViewModel: ObservableObject {
 
     private func startRealtime() async {
         guard let orgId else { return }
-        await memoService.subscribe(
+        try? await memoService.subscribe(
             orgId: orgId,
             onInsert: { [weak self] memo in
                 Task { @MainActor in
