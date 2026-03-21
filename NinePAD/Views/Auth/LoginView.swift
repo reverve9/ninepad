@@ -76,5 +76,15 @@ struct LoginView: View {
             SignUpView()
                 .environmentObject(authService)
         }
+        .onAppear {
+            if authService.pendingInviteToken != nil {
+                showSignUp = true
+            }
+        }
+        .onChange(of: authService.pendingInviteToken) { token in
+            if token != nil {
+                showSignUp = true
+            }
+        }
     }
 }

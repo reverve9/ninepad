@@ -10,8 +10,22 @@ struct NinePADApp: App {
         MenuBarExtra(AppConfig.appName, systemImage: "note.text") {
             ContentView()
                 .environmentObject(authService)
+                .onOpenURL { url in
+                    handleInviteURL(url)
+                }
         }
         .menuBarExtraStyle(.window)
+    }
+
+    private func handleInviteURL(_ url: URL) {
+        guard url.scheme == "ninepad",
+              url.host == "invite",
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let token = components.queryItems?.first(where: { $0.name == "token" })?.value
+        else { return }
+
+        // 토큰을 AuthService에 전달 → SignUpView가 자동으로 초대 탭 열기
+        authService.pendingInviteToken = token
     }
 }
 

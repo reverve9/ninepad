@@ -126,6 +126,14 @@ struct SignUpView: View {
             .padding(.bottom, 16)
         }
         .frame(width: 320, height: 480)
+        .onAppear {
+            // URL Scheme에서 초대 토큰이 전달된 경우 자동 설정
+            if let token = authService.pendingInviteToken {
+                signUpMode = .invite
+                inviteToken = token
+                authService.pendingInviteToken = nil
+            }
+        }
     }
 
     private var isFormValid: Bool {

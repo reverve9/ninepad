@@ -5,6 +5,7 @@ struct MemoZoneView: View {
     @ObservedObject var snippetViewModel: SnippetViewModel
     @StateObject private var viewModel = MemoViewModel()
     @State private var showNewMemo = false
+    @State private var showSettings = false
     @State private var newTitle = ""
     @State private var newContent = ""
 
@@ -173,10 +174,23 @@ struct MemoZoneView: View {
             Text("\(viewModel.filteredMemos.count)개 메모")
                 .font(.system(size: 11))
                 .foregroundColor(AppTheme.textTertiary)
+
+            Spacer()
+
+            Button(action: { showSettings = true }) {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 12))
+                    .foregroundColor(AppTheme.textTertiary)
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(AppTheme.border.opacity(0.5))
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+                .environmentObject(authService)
+        }
     }
 
     private func resetNewMemo() {

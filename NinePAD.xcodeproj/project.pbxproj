@@ -27,6 +27,11 @@
 		A1000018 /* MemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000018; };
 		A1000019 /* SnippetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000019; };
 		A1000020 /* SnippetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000020; };
+		A1000021 /* InvitationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000021; };
+		A1000022 /* OrgService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000022; };
+		A1000023 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000023; };
+		A1000024 /* OrgSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000024; };
+		A1000025 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000025; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +54,11 @@
 		A2000018 /* MemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoViewModel.swift; sourceTree = "<group>"; };
 		A2000019 /* SnippetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetService.swift; sourceTree = "<group>"; };
 		A2000020 /* SnippetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetViewModel.swift; sourceTree = "<group>"; };
+		A2000021 /* InvitationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationService.swift; sourceTree = "<group>"; };
+		A2000022 /* OrgService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrgService.swift; sourceTree = "<group>"; };
+		A2000023 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A2000024 /* OrgSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrgSettingsView.swift; sourceTree = "<group>"; };
+		A2000025 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		A2000099 /* NinePAD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NinePAD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000101 /* NinePAD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NinePAD.entitlements; sourceTree = "<group>"; };
@@ -104,6 +114,7 @@
 			children = (
 				A4000008 /* Auth */,
 				A4000010 /* Main */,
+				A4000011 /* Settings */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -115,6 +126,8 @@
 				A2000007 /* SupabaseManager.swift */,
 				A2000017 /* MemoService.swift */,
 				A2000019 /* SnippetService.swift */,
+				A2000021 /* InvitationService.swift */,
+				A2000022 /* OrgService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -164,6 +177,16 @@
 				A2000020 /* SnippetViewModel.swift */,
 			);
 			path = Main;
+			sourceTree = "<group>";
+		};
+		A4000011 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A2000023 /* SettingsView.swift */,
+				A2000024 /* OrgSettingsView.swift */,
+				A2000025 /* ProfileView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		A4000099 /* Products */ = {
@@ -267,6 +290,11 @@
 				A1000018 /* MemoViewModel.swift in Sources */,
 				A1000019 /* SnippetService.swift in Sources */,
 				A1000020 /* SnippetViewModel.swift in Sources */,
+				A1000021 /* InvitationService.swift in Sources */,
+				A1000022 /* OrgService.swift in Sources */,
+				A1000023 /* SettingsView.swift in Sources */,
+				A1000024 /* OrgSettingsView.swift in Sources */,
+				A1000025 /* ProfileView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

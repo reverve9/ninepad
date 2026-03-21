@@ -9,6 +9,7 @@ final class AuthService: ObservableObject {
     @Published var currentUser: AppUser?
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var pendingInviteToken: String?
 
     init() {
         Task { await restoreSession() }
