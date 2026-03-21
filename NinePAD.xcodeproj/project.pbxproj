@@ -18,6 +18,11 @@
 		A1000009 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000009; };
 		A1000010 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010; };
 		A1000011 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = A5000001; };
+		A1000012 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012; };
+		A1000013 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013; };
+		A1000014 /* SnippetZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000014; };
+		A1000015 /* MemoZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000015; };
+		A1000016 /* MemoRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000016; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +36,11 @@
 		A2000008 /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
 		A2000009 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		A2000010 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		A2000012 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		A2000013 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		A2000014 /* SnippetZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetZoneView.swift; sourceTree = "<group>"; };
+		A2000015 /* MemoZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoZoneView.swift; sourceTree = "<group>"; };
+		A2000016 /* MemoRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoRowView.swift; sourceTree = "<group>"; };
 		A2000099 /* NinePAD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NinePAD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000101 /* NinePAD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NinePAD.entitlements; sourceTree = "<group>"; };
@@ -64,6 +74,7 @@
 				A4000005 /* Services */,
 				A4000006 /* Models */,
 				A4000007 /* Config */,
+				A4000009 /* Theme */,
 				A2000003 /* Assets.xcassets */,
 				A2000100 /* Info.plist */,
 				A2000101 /* NinePAD.entitlements */,
@@ -84,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				A4000008 /* Auth */,
+				A4000010 /* Main */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -121,6 +133,25 @@
 				A2000009 /* AuthViewModel.swift */,
 			);
 			path = Auth;
+			sourceTree = "<group>";
+		};
+		A4000009 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				A2000012 /* AppTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		A4000010 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				A2000013 /* MainView.swift */,
+				A2000014 /* SnippetZoneView.swift */,
+				A2000015 /* MemoZoneView.swift */,
+				A2000016 /* MemoRowView.swift */,
+			);
+			path = Main;
 			sourceTree = "<group>";
 		};
 		A4000099 /* Products */ = {
@@ -215,6 +246,11 @@
 				A1000008 /* AppModels.swift in Sources */,
 				A1000009 /* AuthViewModel.swift in Sources */,
 				A1000010 /* Config.swift in Sources */,
+				A1000012 /* AppTheme.swift in Sources */,
+				A1000013 /* MainView.swift in Sources */,
+				A1000014 /* SnippetZoneView.swift in Sources */,
+				A1000015 /* MemoZoneView.swift in Sources */,
+				A1000016 /* MemoRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
