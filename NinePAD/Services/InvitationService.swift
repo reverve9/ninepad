@@ -46,7 +46,7 @@ final class InvitationService {
         let invitation: Invitation = try await client.from("invitations")
             .select()
             .eq("token", value: token)
-            .is("accepted_at", value: .null)
+            .filter("accepted_at", operator: .is, value: "null")
             .gt("expires_at", value: ISO8601DateFormatter().string(from: Date()))
             .single()
             .execute()

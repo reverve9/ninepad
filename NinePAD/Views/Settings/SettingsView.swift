@@ -21,7 +21,7 @@ struct SettingsView: View {
                 }
             }
         }
-        .frame(width: 340, maxHeight: 500)
+        .frame(maxWidth: 340, maxHeight: 500)
         .background(AppTheme.popoverBg)
     }
 
