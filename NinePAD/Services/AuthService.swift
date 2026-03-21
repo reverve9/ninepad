@@ -168,7 +168,7 @@ final class AuthService: ObservableObject {
                 .select()
                 .eq("token", value: inviteToken)
                 .eq("email", value: email)
-                .filter("accepted_at", operator: .is, value: "null")
+                .is("accepted_at", value: nil)
                 .gt("expires_at", value: ISO8601DateFormatter().string(from: Date()))
                 .single()
                 .execute()
