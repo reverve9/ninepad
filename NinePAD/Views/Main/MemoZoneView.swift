@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MemoZoneView: View {
     @EnvironmentObject var authService: AuthService
+    @ObservedObject var snippetViewModel: SnippetViewModel
     @StateObject private var viewModel = MemoViewModel()
     @State private var showNewMemo = false
     @State private var newTitle = ""
@@ -54,6 +55,9 @@ struct MemoZoneView: View {
                             },
                             onDelete: {
                                 Task { await viewModel.deleteMemo(id: memo.id) }
+                            },
+                            onPinToSnippet: {
+                                Task { await snippetViewModel.createFromMemo(title: memo.title, content: memo.content) }
                             }
                         )
                     }

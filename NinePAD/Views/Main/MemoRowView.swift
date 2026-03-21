@@ -4,6 +4,7 @@ struct MemoRowView: View {
     let memo: Memo
     var onUpdate: (String, String) -> Void
     var onDelete: () -> Void
+    var onPinToSnippet: () -> Void
 
     @State private var isExpanded = false
     @State private var isEditing = false
@@ -42,6 +43,14 @@ struct MemoRowView: View {
                 // Hover 시 액션 버튼들
                 if isHovering || isExpanded {
                     if !isEditing {
+                        Button(action: { onPinToSnippet() }) {
+                            Image(systemName: "pin")
+                                .font(.system(size: 10))
+                                .foregroundColor(AppTheme.accent.opacity(0.7))
+                        }
+                        .buttonStyle(.plain)
+                        .help("스니펫으로 올리기")
+
                         Button(action: { startEditing() }) {
                             Image(systemName: "pencil")
                                 .font(.system(size: 10))

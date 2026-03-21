@@ -9,7 +9,8 @@ NinePAD/
 │   │   ├── HANDOFF.md             ← 이 파일 (인덱스)
 │   │   ├── PHASE1.md              ← 프로젝트 기초 + Supabase
 │   │   ├── PHASE2.md              ← 메인 UI 골격
-│   │   └── PHASE3.md              ← 메모 CRUD + Realtime
+│   │   ├── PHASE3.md              ← 메모 CRUD + Realtime
+│   │   └── PHASE4.md              ← 스니펫 CRUD + 클립보드
 │   ├── SCREENSHOTS/
 │   └── SEED/
 │       └── schema.sql
@@ -28,11 +29,13 @@ NinePAD/
 │   │       ├── SnippetZoneView.swift
 │   │       ├── MemoZoneView.swift
 │   │       ├── MemoRowView.swift
-│   │       └── MemoViewModel.swift
+│   │       ├── MemoViewModel.swift
+│   │       └── SnippetViewModel.swift
 │   ├── Services/
 │   │   ├── SupabaseManager.swift
 │   │   ├── AuthService.swift
-│   │   └── MemoService.swift
+│   │   ├── MemoService.swift
+│   │   └── SnippetService.swift
 │   ├── Models/
 │   │   └── AppModels.swift
 │   ├── Config/
@@ -59,7 +62,7 @@ NinePAD/
 | 1 | 완료 | [PHASE1.md](PHASE1.md) | 프로젝트 기초 + Supabase 스키마 + 인증 |
 | 2 | 완료 | [PHASE2.md](PHASE2.md) | 메뉴바 + 메인 UI 골격 + 다크 테마 |
 | 3 | 완료 | [PHASE3.md](PHASE3.md) | 메모 CRUD + Supabase 실시간 동기화 |
-| 4 | 대기 | — | 스니펫 기능 + 클립보드 |
+| 4 | 완료 | [PHASE4.md](PHASE4.md) | 스니펫 CRUD + 클립보드 + 메모→스니펫 |
 | 5 | 대기 | — | Org 관리 + 초대 |
 | 6 | 대기 | — | Git 푸시 + .dmg 배포 |
 

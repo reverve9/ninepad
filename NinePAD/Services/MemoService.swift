@@ -113,7 +113,7 @@ final class MemoService {
 
 // MARK: - JSONDecoder Extension
 
-private extension JSONDecoder {
+extension JSONDecoder {
     static let supabaseDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()

@@ -1,29 +1,53 @@
 import SwiftUI
 
 struct SnippetZoneView: View {
-    // Phase 4에서 Supabase 연동 예정, 지금은 목업 데이터
-    @State private var snippets: [SnippetItem] = SnippetItem.mockData
+    @ObservedObject var viewModel: SnippetViewModel
     @State private var copiedId: UUID?
+    @State private var isHoveringId: UUID?
+    @State private var editingId: UUID?
+    @State private var editTitle = ""
+    @State private var editContent = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Zone Label
-            Text("SNIPPETS")
-                .font(.system(size: AppTheme.zoneLabelSize, weight: AppTheme.zoneLabelWeight))
-                .foregroundColor(AppTheme.zoneLabel)
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
+            HStack {
+                Text("SNIPPETS")
+                    .font(.system(size: AppTheme.zoneLabelSize, weight: AppTheme.zoneLabelWeight))
+                    .foregroundColor(AppTheme.zoneLabel)
+
+                Spacer()
+
+                if viewModel.isLoading {
+                    ProgressView()
+                        .controlSize(.mini)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+
+            // Error
+            if let error = viewModel.errorMessage {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundColor(AppTheme.danger)
+                    .padding(.horizontal, 16)
+            }
 
             // Snippet List
-            if snippets.isEmpty {
+            if viewModel.snippets.isEmpty {
                 Text("스니펫이 없습니다")
                     .font(.caption)
                     .foregroundColor(AppTheme.textTertiary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
             } else {
-                ForEach(snippets) { snippet in
-                    snippetRow(snippet)
+                ForEach(viewModel.snippets) { snippet in
+                    if editingId == snippet.id {
+                        editRow(snippet)
+                    } else {
+                        snippetRow(snippet)
+                    }
                 }
             }
         }
@@ -31,9 +55,11 @@ struct SnippetZoneView: View {
         .background(AppTheme.snippetZoneBg)
     }
 
+    // MARK: - Snippet Row
+
     @ViewBuilder
-    private func snippetRow(_ snippet: SnippetItem) -> some View {
-        HStack {
+    private func snippetRow(_ snippet: Snippet) -> some View {
+        HStack(spacing: 6) {
             Text(snippet.title)
                 .font(.system(size: 13))
                 .foregroundColor(AppTheme.textPrimary)
@@ -41,6 +67,26 @@ struct SnippetZoneView: View {
 
             Spacer()
 
+            // Hover 시 편집/삭제
+            if isHoveringId == snippet.id {
+                Button(action: { startEditing(snippet) }) {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 10))
+                        .foregroundColor(AppTheme.textTertiary)
+                }
+                .buttonStyle(.plain)
+
+                Button(action: {
+                    Task { await viewModel.deleteSnippet(id: snippet.id) }
+                }) {
+                    Image(systemName: "trash")
+                        .font(.system(size: 10))
+                        .foregroundColor(AppTheme.danger.opacity(0.7))
+                }
+                .buttonStyle(.plain)
+            }
+
+            // 복사 버튼
             Button(action: {
                 copyToClipboard(snippet)
             }) {
@@ -52,11 +98,65 @@ struct SnippetZoneView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 6)
-        .background(AppTheme.hoverBg.opacity(0.01)) // 히트 영역 확보
+        .background(AppTheme.hoverBg.opacity(0.01))
         .contentShape(Rectangle())
+        .onHover { hovering in
+            isHoveringId = hovering ? snippet.id : nil
+        }
     }
 
-    private func copyToClipboard(_ snippet: SnippetItem) {
+    // MARK: - Edit Row
+
+    @ViewBuilder
+    private func editRow(_ snippet: Snippet) -> some View {
+        VStack(spacing: 6) {
+            TextField("제목", text: $editTitle)
+                .textFieldStyle(.plain)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(AppTheme.textPrimary)
+
+            TextField("내용", text: $editContent)
+                .textFieldStyle(.plain)
+                .font(.system(size: 12))
+                .foregroundColor(AppTheme.textSecondary)
+
+            HStack {
+                Button("취소") {
+                    editingId = nil
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(AppTheme.textTertiary)
+                .font(.system(size: 11))
+
+                Spacer()
+
+                Button("저장") {
+                    Task {
+                        await viewModel.updateSnippet(id: snippet.id, title: editTitle, content: editContent)
+                        editingId = nil
+                    }
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(AppTheme.accent)
+                .font(.system(size: 11, weight: .medium))
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(AppTheme.inputBg)
+        .cornerRadius(6)
+        .padding(.horizontal, 8)
+    }
+
+    // MARK: - Helpers
+
+    private func startEditing(_ snippet: Snippet) {
+        editTitle = snippet.title
+        editContent = snippet.content
+        editingId = snippet.id
+    }
+
+    private func copyToClipboard(_ snippet: Snippet) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(snippet.content, forType: .string)
 
@@ -72,18 +172,4 @@ struct SnippetZoneView: View {
             }
         }
     }
-}
-
-// MARK: - Mock Data (Phase 4에서 제거)
-
-struct SnippetItem: Identifiable {
-    let id: UUID
-    let title: String
-    let content: String
-
-    static let mockData: [SnippetItem] = [
-        .init(id: UUID(), title: "SSH 접속 명령어", content: "ssh user@192.168.1.100"),
-        .init(id: UUID(), title: "Git force push", content: "git push --force-with-lease origin main"),
-        .init(id: UUID(), title: "Docker 재시작", content: "docker compose down && docker compose up -d"),
-    ]
 }
