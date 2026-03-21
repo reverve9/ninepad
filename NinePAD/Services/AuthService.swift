@@ -100,6 +100,60 @@ final class AuthService: ObservableObject {
         isLoading = false
     }
 
+    // MARK: - Sign Up (Member — dev mode, org 이름으로 직접 참여)
+
+    @MainActor
+    func signUpAsMember(email: String, password: String, orgName: String) async {
+        isLoading = true
+        errorMessage = nil
+
+        guard AppConfig.devMode else {
+            errorMessage = "개발 모드에서만 사용 가능합니다."
+            isLoading = false
+            return
+        }
+
+        do {
+            // 1. org 이름으로 조직 조회
+            let org: Organization = try await client.from("organizations")
+                .select()
+                .eq("name", value: orgName)
+                .single()
+                .execute()
+                .value
+
+            // 2. Supabase Auth 등록
+            let authResponse = try await client.auth.signUp(
+                email: email,
+                password: password
+            )
+            guard let userId = authResponse.session?.user.id else {
+                errorMessage = "회원가입 후 세션을 가져올 수 없습니다."
+                isLoading = false
+                return
+            }
+
+            // 3. users 테이블에 member로 등록
+            let newUser = try await client.from("users")
+                .insert([
+                    "id": userId.uuidString,
+                    "org_id": org.id.uuidString,
+                    "email": email,
+                    "role": "member"
+                ])
+                .select()
+                .single()
+                .execute()
+                .value as AppUser
+
+            self.currentSession = authResponse.session
+            self.currentUser = newUser
+        } catch {
+            errorMessage = "멤버 가입 실패: \(error.localizedDescription)"
+        }
+        isLoading = false
+    }
+
     // MARK: - Sign Up (Member — via invite token)
 
     @MainActor

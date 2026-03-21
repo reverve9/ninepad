@@ -10,6 +10,14 @@ enum AppConfig {
     /// 프로덕션에서는 환경변수 또는 서버사이드 검증으로 대체 권장
     static let adminInviteCode = "bridge_nine"
 
+    // MARK: - Dev
+    /// 개발 모드: true면 초대 없이 바로 가입 가능
+    #if DEBUG
+    static let devMode = true
+    #else
+    static let devMode = false
+    #endif
+
     // MARK: - App
     static let appName = "NinePAD"
     static let bundleID = "com.ninepad.NinePAD"
