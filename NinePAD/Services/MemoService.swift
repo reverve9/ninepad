@@ -54,7 +54,7 @@ final class MemoService {
     // MARK: - Delete
 
     func deleteMemo(id: UUID) async throws {
-        try await client.from("memos")
+        _ = try await client.from("memos")
             .delete()
             .eq("id", value: id.uuidString)
             .execute()

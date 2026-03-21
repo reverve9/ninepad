@@ -34,7 +34,7 @@ final class InvitationService {
     // MARK: - Revoke
 
     func revokeInvitation(id: UUID) async throws {
-        try await client.from("invitations")
+        _ = try await client.from("invitations")
             .delete()
             .eq("id", value: id.uuidString)
             .execute()
@@ -46,7 +46,7 @@ final class InvitationService {
         let invitation: Invitation = try await client.from("invitations")
             .select()
             .eq("token", value: token)
-            .is("accepted_at", value: "null")
+            .is("accepted_at", value: .null)
             .gt("expires_at", value: ISO8601DateFormatter().string(from: Date()))
             .single()
             .execute()
@@ -57,7 +57,7 @@ final class InvitationService {
     // MARK: - Accept
 
     func acceptInvitation(token: String) async throws {
-        try await client.from("invitations")
+        _ = try await client.from("invitations")
             .update(["accepted_at": ISO8601DateFormatter().string(from: Date())])
             .eq("token", value: token)
             .execute()

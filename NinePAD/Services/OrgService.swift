@@ -19,7 +19,7 @@ final class OrgService {
     // MARK: - Remove Member
 
     func removeMember(userId: UUID) async throws {
-        try await client.from("users")
+        _ = try await client.from("users")
             .delete()
             .eq("id", value: userId.uuidString)
             .execute()

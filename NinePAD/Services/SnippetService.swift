@@ -54,7 +54,7 @@ final class SnippetService {
     // MARK: - Delete
 
     func deleteSnippet(id: UUID) async throws {
-        try await client.from("snippets")
+        _ = try await client.from("snippets")
             .delete()
             .eq("id", value: id.uuidString)
             .execute()

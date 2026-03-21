@@ -168,7 +168,7 @@ final class AuthService: ObservableObject {
                 .select()
                 .eq("token", value: inviteToken)
                 .eq("email", value: email)
-                .is("accepted_at", value: "null")
+                .is("accepted_at", value: .null)
                 .gt("expires_at", value: ISO8601DateFormatter().string(from: Date()))
                 .single()
                 .execute()
@@ -199,7 +199,7 @@ final class AuthService: ObservableObject {
                 .value as AppUser
 
             // 4. 초대 수락 처리
-            try await client.from("invitations")
+            _ = try await client.from("invitations")
                 .update(["accepted_at": ISO8601DateFormatter().string(from: Date())])
                 .eq("id", value: invitation.id.uuidString)
                 .execute()
