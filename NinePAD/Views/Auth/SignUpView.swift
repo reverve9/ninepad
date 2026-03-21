@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SignUpView: View {
     @EnvironmentObject var authService: AuthService
-    @Environment(\.dismiss) var dismiss
+    var onBack: () -> Void
 
     @State private var email = ""
     @State private var password = ""
@@ -38,7 +38,7 @@ struct SignUpView: View {
         VStack(spacing: 16) {
             // Header
             HStack {
-                Button("취소") { dismiss() }
+                Button("취소") { withAnimation(.easeInOut(duration: 0.2)) { onBack() } }
                     .buttonStyle(.plain)
                     .foregroundColor(.secondary)
                 Spacer()
@@ -126,6 +126,7 @@ struct SignUpView: View {
             .padding(.bottom, 16)
         }
         .frame(width: 320, height: 480)
+        .interactiveDismissDisabled(authService.isLoading)
         .onAppear {
             // URL Scheme에서 초대 토큰이 전달된 경우 자동 설정
             if let token = authService.pendingInviteToken {
@@ -171,9 +172,7 @@ struct SignUpView: View {
                     inviteToken: inviteToken
                 )
             }
-            if authService.currentSession != nil {
-                dismiss()
-            }
+            // 가입 성공 시 ContentView가 자동으로 MainView로 전환
         }
     }
 }

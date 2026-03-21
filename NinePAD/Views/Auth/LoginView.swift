@@ -2,11 +2,50 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var authService: AuthService
-    @State private var email = ""
-    @State private var password = ""
     @State private var showSignUp = false
 
     var body: some View {
+        if showSignUp {
+            SignUpView(onBack: { showSignUp = false })
+                .transition(.move(edge: .trailing))
+        } else {
+            loginContent
+                .transition(.move(edge: .leading))
+        }
+    }
+
+    private var loginContent: some View {
+        VStack(spacing: 16) {
+            loginForm
+
+            // Sign Up Link
+            Divider()
+            Button("계정이 없으신가요? 회원가입") {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showSignUp = true
+                }
+            }
+            .buttonStyle(.plain)
+            .foregroundColor(.accentColor)
+            .font(.caption)
+            .padding(.bottom, 12)
+        }
+        .onAppear {
+            if authService.pendingInviteToken != nil {
+                showSignUp = true
+            }
+        }
+        .onChange(of: authService.pendingInviteToken) { _, token in
+            if token != nil {
+                showSignUp = true
+            }
+        }
+    }
+
+    @State private var email = ""
+    @State private var password = ""
+
+    private var loginForm: some View {
         VStack(spacing: 16) {
             // Header
             VStack(spacing: 4) {
@@ -61,30 +100,6 @@ struct LoginView: View {
             .padding(.horizontal)
 
             Spacer()
-
-            // Sign Up Link
-            Divider()
-            Button("계정이 없으신가요? 회원가입") {
-                showSignUp = true
-            }
-            .buttonStyle(.plain)
-            .foregroundColor(.accentColor)
-            .font(.caption)
-            .padding(.bottom, 12)
-        }
-        .sheet(isPresented: $showSignUp) {
-            SignUpView()
-                .environmentObject(authService)
-        }
-        .onAppear {
-            if authService.pendingInviteToken != nil {
-                showSignUp = true
-            }
-        }
-        .onChange(of: authService.pendingInviteToken) { _, token in
-            if token != nil {
-                showSignUp = true
-            }
         }
     }
 }
