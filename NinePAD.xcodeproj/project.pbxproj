@@ -23,6 +23,8 @@
 		A1000014 /* SnippetZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000014; };
 		A1000015 /* MemoZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000015; };
 		A1000016 /* MemoRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000016; };
+		A1000017 /* MemoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000017; };
+		A1000018 /* MemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000018; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +43,8 @@
 		A2000014 /* SnippetZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetZoneView.swift; sourceTree = "<group>"; };
 		A2000015 /* MemoZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoZoneView.swift; sourceTree = "<group>"; };
 		A2000016 /* MemoRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoRowView.swift; sourceTree = "<group>"; };
+		A2000017 /* MemoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoService.swift; sourceTree = "<group>"; };
+		A2000018 /* MemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoViewModel.swift; sourceTree = "<group>"; };
 		A2000099 /* NinePAD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NinePAD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000101 /* NinePAD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NinePAD.entitlements; sourceTree = "<group>"; };
@@ -105,6 +109,7 @@
 			children = (
 				A2000006 /* AuthService.swift */,
 				A2000007 /* SupabaseManager.swift */,
+				A2000017 /* MemoService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -150,6 +155,7 @@
 				A2000014 /* SnippetZoneView.swift */,
 				A2000015 /* MemoZoneView.swift */,
 				A2000016 /* MemoRowView.swift */,
+				A2000018 /* MemoViewModel.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -251,6 +257,8 @@
 				A1000014 /* SnippetZoneView.swift in Sources */,
 				A1000015 /* MemoZoneView.swift in Sources */,
 				A1000016 /* MemoRowView.swift in Sources */,
+				A1000017 /* MemoService.swift in Sources */,
+				A1000018 /* MemoViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

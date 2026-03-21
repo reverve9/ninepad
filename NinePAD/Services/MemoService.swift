@@ -1,0 +1,136 @@
+import Foundation
+import Supabase
+import Realtime
+
+final class MemoService {
+    private let client = SupabaseManager.shared.client
+    private var channel: RealtimeChannelV2?
+
+    // MARK: - Fetch
+
+    func fetchMemos(orgId: UUID) async throws -> [Memo] {
+        let memos: [Memo] = try await client.from("memos")
+            .select()
+            .eq("org_id", value: orgId.uuidString)
+            .order("updated_at", ascending: false)
+            .execute()
+            .value
+        return memos
+    }
+
+    // MARK: - Create
+
+    func createMemo(userId: UUID, orgId: UUID, title: String, content: String) async throws -> Memo {
+        let memo: Memo = try await client.from("memos")
+            .insert([
+                "user_id": userId.uuidString,
+                "org_id": orgId.uuidString,
+                "title": title,
+                "content": content
+            ])
+            .select()
+            .single()
+            .execute()
+            .value
+        return memo
+    }
+
+    // MARK: - Update
+
+    func updateMemo(id: UUID, title: String, content: String) async throws -> Memo {
+        let memo: Memo = try await client.from("memos")
+            .update([
+                "title": title,
+                "content": content
+            ])
+            .eq("id", value: id.uuidString)
+            .select()
+            .single()
+            .execute()
+            .value
+        return memo
+    }
+
+    // MARK: - Delete
+
+    func deleteMemo(id: UUID) async throws {
+        try await client.from("memos")
+            .delete()
+            .eq("id", value: id.uuidString)
+            .execute()
+    }
+
+    // MARK: - Realtime
+
+    func subscribe(
+        orgId: UUID,
+        onInsert: @escaping (Memo) -> Void,
+        onUpdate: @escaping (Memo) -> Void,
+        onDelete: @escaping (UUID) -> Void
+    ) async {
+        let channel = client.realtimeV2.channel("memos-\(orgId.uuidString)")
+
+        let insertions = channel.postgresChange(InsertAction.self, table: "memos", filter: "org_id=eq.\(orgId.uuidString)")
+        let updates = channel.postgresChange(UpdateAction.self, table: "memos", filter: "org_id=eq.\(orgId.uuidString)")
+        let deletions = channel.postgresChange(DeleteAction.self, table: "memos", filter: "org_id=eq.\(orgId.uuidString)")
+
+        await channel.subscribe()
+        self.channel = channel
+
+        Task {
+            for await insertion in insertions {
+                if let memo = try? insertion.decodeRecord(as: Memo.self, decoder: JSONDecoder.supabaseDecoder) {
+                    onInsert(memo)
+                }
+            }
+        }
+
+        Task {
+            for await update in updates {
+                if let memo = try? update.decodeRecord(as: Memo.self, decoder: JSONDecoder.supabaseDecoder) {
+                    onUpdate(memo)
+                }
+            }
+        }
+
+        Task {
+            for await deletion in deletions {
+                if let idString = deletion.oldRecord["id"]?.stringValue,
+                   let id = UUID(uuidString: idString) {
+                    onDelete(id)
+                }
+            }
+        }
+    }
+
+    func unsubscribe() async {
+        if let channel {
+            await channel.unsubscribe()
+            self.channel = nil
+        }
+    }
+}
+
+// MARK: - JSONDecoder Extension
+
+private extension JSONDecoder {
+    static let supabaseDecoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
+            // Fallback without fractional seconds
+            formatter.formatOptions = [.withInternetDateTime]
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(dateString)")
+        }
+        return decoder
+    }()
+}

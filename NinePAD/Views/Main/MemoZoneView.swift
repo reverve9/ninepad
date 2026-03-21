@@ -1,18 +1,11 @@
 import SwiftUI
 
 struct MemoZoneView: View {
-    // Phase 3에서 Supabase 연동 예정, 지금은 목업 데이터
-    @State private var memos: [MemoItem] = MemoItem.mockData
-    @State private var searchText = ""
+    @EnvironmentObject var authService: AuthService
+    @StateObject private var viewModel = MemoViewModel()
     @State private var showNewMemo = false
-
-    private var filteredMemos: [MemoItem] {
-        if searchText.isEmpty { return memos }
-        return memos.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText) ||
-            $0.content.localizedCaseInsensitiveContains(searchText)
-        }
-    }
+    @State private var newTitle = ""
+    @State private var newContent = ""
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,17 +17,45 @@ struct MemoZoneView: View {
                 Text("MEMOS")
                     .font(.system(size: AppTheme.zoneLabelSize, weight: AppTheme.zoneLabelWeight))
                     .foregroundColor(AppTheme.zoneLabel)
+
                 Spacer()
+
+                if viewModel.isLoading {
+                    ProgressView()
+                        .controlSize(.mini)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 4)
 
+            // 에러 메시지
+            if let error = viewModel.errorMessage {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundColor(AppTheme.danger)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 4)
+            }
+
+            // 새 메모 인라인 입력
+            if showNewMemo {
+                newMemoForm
+            }
+
             // 메모 리스트
             ScrollView {
                 LazyVStack(spacing: 2) {
-                    ForEach(filteredMemos) { memo in
-                        MemoRowView(memo: memo)
+                    ForEach(viewModel.filteredMemos) { memo in
+                        MemoRowView(
+                            memo: memo,
+                            onUpdate: { title, content in
+                                Task { await viewModel.updateMemo(id: memo.id, title: title, content: content) }
+                            },
+                            onDelete: {
+                                Task { await viewModel.deleteMemo(id: memo.id) }
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, 8)
@@ -44,6 +65,14 @@ struct MemoZoneView: View {
             bottomBar
         }
         .background(AppTheme.memoZoneBg)
+        .onAppear {
+            if let user = authService.currentUser {
+                viewModel.setup(userId: user.id, orgId: user.orgId)
+            }
+        }
+        .onDisappear {
+            Task { await viewModel.stopRealtime() }
+        }
     }
 
     // MARK: - Search Bar
@@ -54,13 +83,13 @@ struct MemoZoneView: View {
                 .font(.system(size: 12))
                 .foregroundColor(AppTheme.textTertiary)
 
-            TextField("메모 검색...", text: $searchText)
+            TextField("메모 검색...", text: $viewModel.searchText)
                 .textFieldStyle(.plain)
                 .font(.system(size: 13))
                 .foregroundColor(AppTheme.textPrimary)
 
-            if !searchText.isEmpty {
-                Button(action: { searchText = "" }) {
+            if !viewModel.searchText.isEmpty {
+                Button(action: { viewModel.searchText = "" }) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 12))
                         .foregroundColor(AppTheme.textTertiary)
@@ -76,15 +105,59 @@ struct MemoZoneView: View {
         .padding(.top, 8)
     }
 
+    // MARK: - New Memo Form
+
+    private var newMemoForm: some View {
+        VStack(spacing: 8) {
+            TextField("제목", text: $newTitle)
+                .textFieldStyle(.plain)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(AppTheme.textPrimary)
+
+            TextEditor(text: $newContent)
+                .font(.system(size: 12))
+                .foregroundColor(AppTheme.textSecondary)
+                .scrollContentBackground(.hidden)
+                .frame(minHeight: 60, maxHeight: 100)
+
+            HStack {
+                Button("취소") {
+                    resetNewMemo()
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(AppTheme.textTertiary)
+                .font(.system(size: 12))
+
+                Spacer()
+
+                Button("저장") {
+                    Task {
+                        await viewModel.createMemo(title: newTitle, content: newContent)
+                        resetNewMemo()
+                    }
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(newTitle.isEmpty ? AppTheme.textTertiary : AppTheme.accent)
+                .font(.system(size: 12, weight: .medium))
+                .disabled(newTitle.isEmpty)
+            }
+        }
+        .padding(12)
+        .background(AppTheme.inputBg)
+        .cornerRadius(AppTheme.cornerRadius)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 4)
+    }
+
     // MARK: - Bottom Bar
 
     private var bottomBar: some View {
         HStack {
-            Button(action: { showNewMemo = true }) {
+            Button(action: { showNewMemo.toggle() }) {
                 HStack(spacing: 4) {
-                    Image(systemName: "plus")
+                    Image(systemName: showNewMemo ? "xmark" : "plus")
                         .font(.system(size: 11))
-                    Text("새 메모")
+                    Text(showNewMemo ? "닫기" : "새 메모")
                         .font(.system(size: 12))
                 }
                 .foregroundColor(AppTheme.accent)
@@ -93,7 +166,7 @@ struct MemoZoneView: View {
 
             Spacer()
 
-            Text("\(filteredMemos.count)개 메모")
+            Text("\(viewModel.filteredMemos.count)개 메모")
                 .font(.system(size: 11))
                 .foregroundColor(AppTheme.textTertiary)
         }
@@ -101,19 +174,10 @@ struct MemoZoneView: View {
         .padding(.vertical, 10)
         .background(AppTheme.border.opacity(0.5))
     }
-}
 
-// MARK: - Mock Data (Phase 3에서 제거)
-
-struct MemoItem: Identifiable {
-    let id: UUID
-    let title: String
-    let content: String
-
-    static let mockData: [MemoItem] = [
-        .init(id: UUID(), title: "서버 배포 체크리스트", content: "1. 테스트 통과 확인\n2. 환경변수 점검\n3. DB 마이그레이션\n4. 배포 후 헬스체크"),
-        .init(id: UUID(), title: "API 엔드포인트 정리", content: "POST /auth/login\nGET /users/me\nGET /memos\nPOST /memos"),
-        .init(id: UUID(), title: "디자인 시스템 컬러", content: "Primary: #19202E\nSecondary: #1E2535\nAccent: #4A9EFF"),
-        .init(id: UUID(), title: "회의 노트 - 3/20", content: "- Phase 2 UI 확정\n- 다크 테마 적용\n- 글로벌 단축키 Cmd+Shift+N"),
-    ]
+    private func resetNewMemo() {
+        newTitle = ""
+        newContent = ""
+        showNewMemo = false
+    }
 }
