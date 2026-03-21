@@ -40,7 +40,7 @@ struct SignUpView: View {
             HStack {
                 Button("취소") { withAnimation(.easeInOut(duration: 0.2)) { onBack() } }
                     .buttonStyle(.plain)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppTheme.textSecondary)
                 Spacer()
                 Text("회원가입")
                     .font(.headline)
@@ -96,7 +96,7 @@ struct SignUpView: View {
             if let error = authService.errorMessage {
                 Text(error)
                     .font(.caption)
-                    .foregroundColor(.red)
+                    .foregroundColor(AppTheme.danger)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
@@ -105,7 +105,7 @@ struct SignUpView: View {
             if !passwordConfirm.isEmpty && password != passwordConfirm {
                 Text("비밀번호가 일치하지 않습니다.")
                     .font(.caption)
-                    .foregroundColor(.orange)
+                    .foregroundColor(AppTheme.warning)
             }
 
             Spacer()

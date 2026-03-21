@@ -2,26 +2,28 @@ import SwiftUI
 
 enum AppTheme {
     // MARK: - Backgrounds
-    static let snippetZoneBg = Color(hex: 0x19202E)
-    static let memoZoneBg    = Color(hex: 0x1E2535)
-    static let popoverBg     = Color(hex: 0x141A26)
-    static let inputBg       = Color(hex: 0x252D3D)
+    static let snippetZoneBg = Color(hex: 0x252526)
+    static let memoZoneBg    = Color(hex: 0x1E1E1E)
+    static let popoverBg     = Color(hex: 0x1E1E1E)
+    static let inputBg       = Color(hex: 0x2D2D2D)
     static let hoverBg       = Color.white.opacity(0.05)
 
     // MARK: - Text
-    static let textPrimary   = Color.white
-    static let textSecondary = Color.white.opacity(0.7)
-    static let textTertiary  = Color.white.opacity(0.4)
-    static let zoneLabel     = Color.white.opacity(0.25)
+    static let textPrimary   = Color(hex: 0xD4D4D4)
+    static let textSecondary = Color(hex: 0x9D9D9D)
+    static let textTertiary  = Color(hex: 0x5A5A5A)
+    static let zoneLabel     = Color(hex: 0x5A5A5A)
 
     // MARK: - Accent
-    static let accent        = Color(hex: 0x4A9EFF)
-    static let accentHover   = Color(hex: 0x6BB3FF)
-    static let success       = Color(hex: 0x34D399)
+    static let accent        = Color(hex: 0x4EB8FA)
+    static let accentHover   = Color(hex: 0x6BC8FF)
+    static let success       = Color(hex: 0x57A64A)
+    static let warning       = Color(hex: 0xCDA869)
     static let danger        = Color(hex: 0xEF4444)
 
     // MARK: - Border
     static let border        = Color.white.opacity(0.08)
+    static let borderSub     = Color.white.opacity(0.04)
     static let borderActive  = Color.white.opacity(0.15)
 
     // MARK: - Sizes

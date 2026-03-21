@@ -26,7 +26,7 @@ struct LoginView: View {
                 }
             }
             .buttonStyle(.plain)
-            .foregroundColor(.accentColor)
+            .foregroundColor(AppTheme.accent)
             .font(.caption)
             .padding(.bottom, 12)
         }
@@ -51,12 +51,12 @@ struct LoginView: View {
             VStack(spacing: 4) {
                 Image(systemName: "note.text")
                     .font(.system(size: 36))
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(AppTheme.accent)
                 Text(AppConfig.appName)
                     .font(.title2.bold())
                 Text("로그인")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppTheme.textSecondary)
             }
             .padding(.top, 24)
 
@@ -78,7 +78,7 @@ struct LoginView: View {
             if let error = authService.errorMessage {
                 Text(error)
                     .font(.caption)
-                    .foregroundColor(.red)
+                    .foregroundColor(AppTheme.danger)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
