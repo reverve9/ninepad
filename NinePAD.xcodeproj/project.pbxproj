@@ -36,6 +36,7 @@
 		A1000027 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000027 /* KeychainHelper.swift */; };
 		A1000028 /* GitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000028 /* GitSettingsView.swift */; };
 		A1000029 /* OrgApprovalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000029 /* OrgApprovalView.swift */; };
+		A1000030 /* MemoDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000030 /* MemoDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +68,7 @@
 		A2000027 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		A2000028 /* GitSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitSettingsView.swift; sourceTree = "<group>"; };
 		A2000029 /* OrgApprovalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrgApprovalView.swift; sourceTree = "<group>"; };
+		A2000030 /* MemoDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailView.swift; sourceTree = "<group>"; };
 		A2000099 /* NinePAD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NinePAD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000101 /* NinePAD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NinePAD.entitlements; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				A2000016 /* MemoRowView.swift */,
 				A2000018 /* MemoViewModel.swift */,
 				A2000020 /* SnippetViewModel.swift */,
+				A2000030 /* MemoDetailView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 				A1000027 /* KeychainHelper.swift in Sources */,
 				A1000028 /* GitSettingsView.swift in Sources */,
 				A1000029 /* OrgApprovalView.swift in Sources */,
+				A1000030 /* MemoDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

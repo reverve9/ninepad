@@ -5,11 +5,10 @@ struct MemoZoneView: View {
     @ObservedObject var snippetViewModel: SnippetViewModel
     @StateObject private var viewModel = MemoViewModel()
     @State private var showNewMemo = false
-    // showSettings는 MainView로 이동
     @State private var newTitle = ""
     @State private var newContent = ""
+    @State private var selectedMemo: Memo?
     @State private var pushingMemoId: UUID?
-    @State private var pushedMemoId: UUID?
     @State private var isPushingAll = false
     @State private var pushAllDone = false
 
@@ -35,7 +34,7 @@ struct MemoZoneView: View {
             .padding(.top, 8)
             .padding(.bottom, 4)
 
-            // 에러 메시지
+            // 에러
             if let error = viewModel.errorMessage {
                 Text(error)
                     .font(.caption2)
@@ -55,18 +54,8 @@ struct MemoZoneView: View {
                     ForEach(viewModel.filteredMemos) { memo in
                         MemoRowView(
                             memo: memo,
-                            onUpdate: { title, content in
-                                Task { await viewModel.updateMemo(id: memo.id, title: title, content: content) }
-                            },
-                            onDelete: {
-                                Task { await viewModel.deleteMemo(id: memo.id) }
-                            },
-                            onPinToSnippet: {
-                                Task { await snippetViewModel.createFromMemo(title: memo.title, content: memo.content) }
-                            },
-                            onPush: {
-                                pushMemo(memo)
-                            }
+                            onTap: { selectedMemo = memo },
+                            onDelete: { Task { await viewModel.deleteMemo(id: memo.id) } }
                         )
                     }
                 }
@@ -84,6 +73,25 @@ struct MemoZoneView: View {
         }
         .onDisappear {
             Task { await viewModel.stopRealtime() }
+        }
+        .sheet(item: $selectedMemo) { memo in
+            MemoDetailView(
+                memo: memo,
+                onUpdate: { title, content in
+                    Task { await viewModel.updateMemo(id: memo.id, title: title, content: content) }
+                    selectedMemo = nil
+                },
+                onDelete: {
+                    Task { await viewModel.deleteMemo(id: memo.id) }
+                    selectedMemo = nil
+                },
+                onPinToSnippet: {
+                    Task { await snippetViewModel.createFromMemo(title: memo.title, content: memo.content) }
+                },
+                onPush: {
+                    pushMemo(memo)
+                }
+            )
         }
     }
 
@@ -121,24 +129,22 @@ struct MemoZoneView: View {
 
     private var newMemoForm: some View {
         VStack(spacing: 8) {
-            TextField("제목", text: $newTitle)
-                .textFieldStyle(.plain)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(AppTheme.textPrimary)
+            NinePADField(label: "제목", placeholder: "메모 제목", text: $newTitle)
 
             TextEditor(text: $newContent)
                 .font(.system(size: 12))
-                .foregroundColor(AppTheme.textSecondary)
+                .foregroundColor(AppTheme.textPrimary)
                 .scrollContentBackground(.hidden)
                 .frame(minHeight: 60, maxHeight: 100)
+                .padding(8)
+                .background(AppTheme.inputBg)
+                .cornerRadius(AppTheme.cornerRadius)
 
             HStack {
-                Button("취소") {
-                    resetNewMemo()
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(AppTheme.textTertiary)
-                .font(.system(size: 12))
+                Button("취소") { resetNewMemo() }
+                    .buttonStyle(.plain)
+                    .foregroundColor(AppTheme.textTertiary)
+                    .font(.system(size: 12))
 
                 Spacer()
 
@@ -155,7 +161,7 @@ struct MemoZoneView: View {
             }
         }
         .padding(12)
-        .background(AppTheme.inputBg)
+        .background(AppTheme.inputBg.opacity(0.5))
         .cornerRadius(AppTheme.cornerRadius)
         .padding(.horizontal, 12)
         .padding(.vertical, 4)
@@ -216,10 +222,6 @@ struct MemoZoneView: View {
         Task {
             do {
                 try await GitService.pushMemo(memo)
-                pushedMemoId = memo.id
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                    pushedMemoId = nil
-                }
             } catch {
                 viewModel.errorMessage = error.localizedDescription
             }
