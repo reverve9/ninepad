@@ -244,6 +244,7 @@ final class AuthService: ObservableObject {
                     createdAt: Date()
                 )
                 print("[Auth] fallback 유저 생성: \(session.user.email ?? "unknown"), role=member")
+            }
         }
     }
 }
