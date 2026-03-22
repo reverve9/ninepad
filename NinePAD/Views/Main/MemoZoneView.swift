@@ -50,7 +50,10 @@ struct MemoZoneView: View {
                             onTap: {
                                 openWindow(value: memo.id)
                             },
-                            onDelete: { Task { await viewModel.deleteMemo(id: memo.id) } }
+                            onDelete: { Task { await viewModel.deleteMemo(id: memo.id) } },
+                            onPin: {
+                                Task { await snippetViewModel.createFromMemo(title: memo.title, content: memo.content) }
+                            }
                         )
                     }
                 }

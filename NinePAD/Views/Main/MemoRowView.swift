@@ -4,9 +4,11 @@ struct MemoRowView: View {
     let memo: Memo
     var onTap: () -> Void
     var onDelete: () -> Void
+    var onPin: () -> Void
 
     @State private var isHovering = false
     @State private var showDeleteConfirm = false
+    @State private var pinned = false
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -50,8 +52,22 @@ struct MemoRowView: View {
                         .lineLimit(1)
                 }
 
-                // 삭제 (hover 시)
+                // hover 시 액션
                 if isHovering {
+                    Button(action: {
+                        onPin()
+                        withAnimation { pinned = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                            withAnimation { pinned = false }
+                        }
+                    }) {
+                        Image(systemName: pinned ? "pin.fill" : "pin")
+                            .font(.system(size: 9))
+                            .foregroundColor(pinned ? AppTheme.success : AppTheme.textTertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(pinned)
+
                     Button(action: { showDeleteConfirm = true }) {
                         Image(systemName: "xmark")
                             .font(.system(size: 9))
