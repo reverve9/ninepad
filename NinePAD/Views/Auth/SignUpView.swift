@@ -18,15 +18,15 @@ struct SignUpView: View {
     // Dev member
     @State private var orgCode = ""
 
-    @State private var signUpMode: SignUpMode = .admin
+    @State private var signUpMode: SignUpMode = .orgRequest
 
     enum SignUpMode: String, CaseIterable {
-        case admin = "관리자"
+        case orgRequest = "Org 생성"
         case member = "멤버"
         case invite = "초대"
 
         static var availableCases: [SignUpMode] {
-            AppConfig.devMode ? [.admin, .member, .invite] : [.admin, .invite]
+            AppConfig.devMode ? [.orgRequest, .member, .invite] : [.orgRequest, .invite]
         }
     }
 
@@ -48,9 +48,8 @@ struct SignUpView: View {
 
             // Mode-specific
             switch signUpMode {
-            case .admin:
+            case .orgRequest:
                 NinePADField(label: "조직 이름", placeholder: "조직명 입력", text: $orgName)
-                NinePADField(label: "관리자 인증코드", placeholder: "인증코드 입력", text: $adminCode, isSecure: true)
             case .member:
                 NinePADField(label: "조직 이름", placeholder: "참여할 조직명 입력", text: $orgCode)
             case .invite:
@@ -92,8 +91,8 @@ struct SignUpView: View {
     private var isFormValid: Bool {
         let commonValid = !email.isEmpty && !password.isEmpty && password == passwordConfirm && password.count >= 6
         switch signUpMode {
-        case .admin:
-            return commonValid && !orgName.isEmpty && !adminCode.isEmpty
+        case .orgRequest:
+            return commonValid && !orgName.isEmpty
         case .member:
             return commonValid && !orgCode.isEmpty
         case .invite:
@@ -104,12 +103,11 @@ struct SignUpView: View {
     private func signUp() {
         Task {
             switch signUpMode {
-            case .admin:
-                await authService.signUpAsAdmin(
+            case .orgRequest:
+                await authService.signUpWithOrgRequest(
                     email: email,
                     password: password,
-                    orgName: orgName,
-                    adminCode: adminCode
+                    orgName: orgName
                 )
             case .member:
                 await authService.signUpAsMember(

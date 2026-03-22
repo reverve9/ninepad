@@ -78,8 +78,8 @@ struct MemoZoneView: View {
         }
         .background(AppTheme.memoZoneBg)
         .onAppear {
-            if let user = authService.currentUser {
-                viewModel.setup(userId: user.id, orgId: user.orgId)
+            if let user = authService.currentUser, let orgId = user.orgId {
+                viewModel.setup(userId: user.id, orgId: orgId)
             }
         }
         .onDisappear {

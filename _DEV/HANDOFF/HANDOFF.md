@@ -37,7 +37,8 @@ NinePAD/
 │   │       ├── SettingsView.swift
 │   │       ├── OrgSettingsView.swift
 │   │       ├── ProfileView.swift
-│   │       └── GitSettingsView.swift
+│   │       ├── GitSettingsView.swift
+│   │       └── OrgApprovalView.swift
 │   ├── Services/
 │   │   ├── SupabaseManager.swift
 │   │   ├── AuthService.swift
@@ -63,8 +64,8 @@ NinePAD/
 - **타겟**: macOS 14+, SwiftUI, 메뉴바 전용 (Dock 아이콘 없음)
 - **의존성**: `supabase-swift` 2.0+ (SPM)
 - **Supabase**: `ujfjduravztyssnaewxb` 프로젝트 연결 완료
-- **관리자 인증코드**: `bridge_nine`
-- **개인 계정**: `reverve9`
+- **슈퍼 어드민**: 시스템 전체 관리자 (Org 승인/거절)
+- **Org 생성**: 신청 → 슈퍼어드민 승인 후 활성화
 - **URL Scheme**: `ninepad://`
 - **테마**: Nine Messenger 라이트 모드 (#FFFFFF 배경, #1C2B4A 네이비 강조)
 

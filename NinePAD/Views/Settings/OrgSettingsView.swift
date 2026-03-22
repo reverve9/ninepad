@@ -184,13 +184,13 @@ struct OrgSettingsView: View {
     // MARK: - Actions
 
     private func loadData() async {
-        guard let user = authService.currentUser else { return }
+        guard let user = authService.currentUser, let orgId = user.orgId else { return }
         isLoading = true
         do {
-            let org = try await orgService.fetchOrganization(orgId: user.orgId)
+            let org = try await orgService.fetchOrganization(orgId: orgId)
             orgName = org.name
-            members = try await orgService.fetchMembers(orgId: user.orgId)
-            invitations = try await invitationService.fetchInvitations(orgId: user.orgId)
+            members = try await orgService.fetchMembers(orgId: orgId)
+            invitations = try await invitationService.fetchInvitations(orgId: orgId)
         } catch {
             errorMessage = "데이터 로드 실패: \(error.localizedDescription)"
         }
@@ -222,7 +222,8 @@ struct OrgSettingsView: View {
         guard let user = authService.currentUser else { return }
         isLoading = true
         do {
-            let invitation = try await invitationService.createInvitation(orgId: user.orgId, email: inviteEmail)
+            guard let orgId = user.orgId else { return }
+            let invitation = try await invitationService.createInvitation(orgId: orgId, email: inviteEmail)
             invitations.insert(invitation, at: 0)
             inviteEmail = ""
         } catch {

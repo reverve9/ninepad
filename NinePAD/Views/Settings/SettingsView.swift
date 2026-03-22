@@ -4,7 +4,11 @@ struct SettingsView: View {
     @EnvironmentObject var authService: AuthService
 
     private var isAdmin: Bool {
-        authService.currentUser?.role == .admin
+        authService.currentUser?.isAdmin ?? false
+    }
+
+    private var isSuperAdmin: Bool {
+        authService.currentUser?.isSuperAdmin ?? false
     }
 
     var body: some View {
@@ -14,9 +18,17 @@ struct SettingsView: View {
 
                 Divider().background(AppTheme.border)
 
-                if isAdmin {
+                // 슈퍼어드민: Org 승인 관리
+                if isSuperAdmin {
+                    OrgApprovalView()
+
+                    Divider().background(AppTheme.border)
+                }
+
+                // admin: Org 설정
+                if isAdmin && !isSuperAdmin {
                     OrgSettingsView()
-                } else {
+                } else if !isSuperAdmin {
                     memberOrgInfo
                 }
 
@@ -29,7 +41,6 @@ struct SettingsView: View {
         .background(AppTheme.popoverBg)
     }
 
-    // member 전용: org 정보만 표시
     private var memberOrgInfo: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("ORG INFO")

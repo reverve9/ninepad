@@ -7,34 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1000001 /* NinePADApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001; };
-		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002; };
-		A1000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000003; };
-		A1000004 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000004; };
-		A1000005 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005; };
-		A1000006 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000006; };
-		A1000007 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007; };
-		A1000008 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000008; };
-		A1000009 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000009; };
-		A1000010 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010; };
-		A1000011 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = A5000001; };
-		A1000012 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012; };
-		A1000013 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013; };
-		A1000014 /* SnippetZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000014; };
-		A1000015 /* MemoZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000015; };
-		A1000016 /* MemoRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000016; };
-		A1000017 /* MemoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000017; };
-		A1000018 /* MemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000018; };
-		A1000019 /* SnippetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000019; };
-		A1000020 /* SnippetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000020; };
-		A1000021 /* InvitationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000021; };
-		A1000022 /* OrgService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000022; };
-		A1000023 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000023; };
-		A1000024 /* OrgSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000024; };
-		A1000025 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000025; };
-		A1000026 /* GitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000026; };
-		A1000027 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000027; };
-		A1000028 /* GitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000028; };
+		A1000001 /* NinePADApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* NinePADApp.swift */; };
+		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
+		A1000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000003 /* Assets.xcassets */; };
+		A1000004 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000004 /* LoginView.swift */; };
+		A1000005 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005 /* SignUpView.swift */; };
+		A1000006 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000006 /* AuthService.swift */; };
+		A1000007 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* SupabaseManager.swift */; };
+		A1000008 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000008 /* AppModels.swift */; };
+		A1000009 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000009 /* AuthViewModel.swift */; };
+		A1000010 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010 /* Config.swift */; };
+		A1000011 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = A5000001 /* Supabase */; };
+		A1000012 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012 /* AppTheme.swift */; };
+		A1000013 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013 /* MainView.swift */; };
+		A1000014 /* SnippetZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000014 /* SnippetZoneView.swift */; };
+		A1000015 /* MemoZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000015 /* MemoZoneView.swift */; };
+		A1000016 /* MemoRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000016 /* MemoRowView.swift */; };
+		A1000017 /* MemoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000017 /* MemoService.swift */; };
+		A1000018 /* MemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000018 /* MemoViewModel.swift */; };
+		A1000019 /* SnippetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000019 /* SnippetService.swift */; };
+		A1000020 /* SnippetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000020 /* SnippetViewModel.swift */; };
+		A1000021 /* InvitationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000021 /* InvitationService.swift */; };
+		A1000022 /* OrgService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000022 /* OrgService.swift */; };
+		A1000023 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000023 /* SettingsView.swift */; };
+		A1000024 /* OrgSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000024 /* OrgSettingsView.swift */; };
+		A1000025 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000025 /* ProfileView.swift */; };
+		A1000026 /* GitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000026 /* GitService.swift */; };
+		A1000027 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000027 /* KeychainHelper.swift */; };
+		A1000028 /* GitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000028 /* GitSettingsView.swift */; };
+		A1000029 /* OrgApprovalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000029 /* OrgApprovalView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,7 @@
 		A2000026 /* GitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitService.swift; sourceTree = "<group>"; };
 		A2000027 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		A2000028 /* GitSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitSettingsView.swift; sourceTree = "<group>"; };
+		A2000029 /* OrgApprovalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrgApprovalView.swift; sourceTree = "<group>"; };
 		A2000099 /* NinePAD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NinePAD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000101 /* NinePAD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NinePAD.entitlements; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				A2000024 /* OrgSettingsView.swift */,
 				A2000025 /* ProfileView.swift */,
 				A2000028 /* GitSettingsView.swift */,
+				A2000029 /* OrgApprovalView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -237,7 +240,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					A6000001 = {
 						CreatedOnToolsVersion = 15.0;
@@ -307,6 +310,7 @@
 				A1000026 /* GitService.swift in Sources */,
 				A1000027 /* KeychainHelper.swift in Sources */,
 				A1000028 /* GitSettingsView.swift in Sources */,
+				A1000029 /* OrgApprovalView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,18 +326,45 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 79458FGUX3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -348,15 +379,42 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 79458FGUX3;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -369,6 +427,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NinePAD/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -393,6 +455,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NinePAD/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -450,7 +516,6 @@
 			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
-
 	};
 	rootObject = A8000001 /* Project object */;
 }

@@ -14,8 +14,8 @@ struct MainView: View {
             MemoZoneView(snippetViewModel: snippetViewModel)
         }
         .onAppear {
-            if let user = authService.currentUser {
-                snippetViewModel.setup(userId: user.id, orgId: user.orgId)
+            if let user = authService.currentUser, let orgId = user.orgId {
+                snippetViewModel.setup(userId: user.id, orgId: orgId)
             }
         }
         .onDisappear {

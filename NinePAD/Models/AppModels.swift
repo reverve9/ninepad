@@ -3,8 +3,17 @@ import Foundation
 // MARK: - User Role
 
 enum UserRole: String, Codable {
+    case superadmin
     case admin
     case member
+}
+
+// MARK: - Org Status
+
+enum OrgStatus: String, Codable {
+    case pending
+    case approved
+    case rejected
 }
 
 // MARK: - Organization
@@ -12,10 +21,11 @@ enum UserRole: String, Codable {
 struct Organization: Codable, Identifiable {
     let id: UUID
     let name: String
+    var status: OrgStatus
     let createdAt: Date
 
     enum CodingKeys: String, CodingKey {
-        case id, name
+        case id, name, status
         case createdAt = "created_at"
     }
 }
@@ -24,7 +34,7 @@ struct Organization: Codable, Identifiable {
 
 struct AppUser: Codable, Identifiable {
     let id: UUID
-    let orgId: UUID
+    let orgId: UUID?
     let email: String
     let role: UserRole
     let createdAt: Date
@@ -34,6 +44,9 @@ struct AppUser: Codable, Identifiable {
         case orgId = "org_id"
         case createdAt = "created_at"
     }
+
+    var isSuperAdmin: Bool { role == .superadmin }
+    var isAdmin: Bool { role == .admin || role == .superadmin }
 }
 
 // MARK: - Memo

@@ -47,18 +47,12 @@ final class AuthService: ObservableObject {
         isLoading = false
     }
 
-    // MARK: - Sign Up (Admin — creates Org)
+    // MARK: - Sign Up (Org 생성 신청 — pending 상태)
 
     @MainActor
-    func signUpAsAdmin(email: String, password: String, orgName: String, adminCode: String) async {
+    func signUpWithOrgRequest(email: String, password: String, orgName: String) async {
         isLoading = true
         errorMessage = nil
-
-        guard adminCode == AppConfig.adminInviteCode else {
-            errorMessage = "관리자 인증코드가 올바르지 않습니다."
-            isLoading = false
-            return
-        }
 
         do {
             // 1. Supabase Auth에 사용자 등록
@@ -72,15 +66,15 @@ final class AuthService: ObservableObject {
                 return
             }
 
-            // 2. Organization 생성
+            // 2. Organization 생성 (pending 상태)
             let org = try await client.from("organizations")
-                .insert(["name": orgName])
+                .insert(["name": orgName, "status": "pending"])
                 .select()
                 .single()
                 .execute()
                 .value as Organization
 
-            // 3. users 테이블에 admin으로 등록
+            // 3. users 테이블에 admin으로 등록 (org 승인 전이지만 연결)
             let newUser = try await client.from("users")
                 .insert([
                     "id": userId.uuidString,
@@ -96,7 +90,7 @@ final class AuthService: ObservableObject {
             self.currentSession = authResponse.session
             self.currentUser = newUser
         } catch {
-            errorMessage = "관리자 가입 실패: \(error.localizedDescription)"
+            errorMessage = "Org 생성 신청 실패: \(error.localizedDescription)"
         }
         isLoading = false
     }
