@@ -232,7 +232,17 @@ final class AuthService: ObservableObject {
                 .value
             self.currentUser = user
         } catch {
-            errorMessage = "프로필 로드 실패: \(error.localizedDescription)"
+            // RLS로 인해 프로필 로드 실패 시 세션 이메일로 최소 정보 생성
+            if let session = currentSession {
+                self.currentUser = AppUser(
+                    id: session.user.id,
+                    orgId: nil,
+                    email: session.user.email ?? "unknown",
+                    role: .member,
+                    createdAt: Date()
+                )
+            }
+            print("프로필 로드 실패 (fallback 사용): \(error.localizedDescription)")
         }
     }
 }
