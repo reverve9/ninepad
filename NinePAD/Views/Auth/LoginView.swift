@@ -2,104 +2,193 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var authService: AuthService
-    @State private var showSignUp = false
+    @State private var selectedTab: AuthTab = .login
 
-    var body: some View {
-        if showSignUp {
-            SignUpView(onBack: { showSignUp = false })
-                .transition(.move(edge: .trailing))
-        } else {
-            loginContent
-                .transition(.move(edge: .leading))
-        }
+    enum AuthTab {
+        case login, signup
     }
 
-    private var loginContent: some View {
-        VStack(spacing: 16) {
-            loginForm
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            header
+                .padding(.top, 40)
+                .padding(.bottom, 28)
 
-            // Sign Up Link
-            Divider()
-            Button("계정이 없으신가요? 회원가입") {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    showSignUp = true
+            // Tab Bar
+            tabBar
+                .padding(.horizontal, 32)
+
+            // Content
+            Group {
+                switch selectedTab {
+                case .login:
+                    loginForm
+                case .signup:
+                    SignUpView(onBack: { selectedTab = .login })
                 }
             }
-            .buttonStyle(.plain)
-            .foregroundColor(AppTheme.accent)
-            .font(.caption)
-            .padding(.bottom, 12)
+            .padding(.horizontal, 32)
+            .padding(.top, 24)
+
+            Spacer()
+
+            // Footer
+            Text("© 2024 Nineworx. All rights reserved.")
+                .font(.system(size: 11))
+                .foregroundColor(AppTheme.placeholder)
+                .padding(.bottom, 16)
         }
+        .frame(width: AppTheme.loginWidth, height: AppTheme.loginHeight)
+        .background(AppTheme.popoverBg)
         .onAppear {
             if authService.pendingInviteToken != nil {
-                showSignUp = true
+                selectedTab = .signup
             }
         }
         .onChange(of: authService.pendingInviteToken) { _, token in
             if token != nil {
-                showSignUp = true
+                selectedTab = .signup
             }
         }
     }
+
+    // MARK: - Header
+
+    private var header: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "note.text.badge.plus")
+                .font(.system(size: 48))
+                .foregroundColor(AppTheme.accent)
+                .frame(width: 72, height: 72)
+                .background(AppTheme.accentLight)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+
+            Text(AppConfig.appName)
+                .font(.system(size: 22, weight: .bold))
+                .foregroundColor(AppTheme.textPrimary)
+
+            Text("개인 메모 & 스니펫")
+                .font(.system(size: 14))
+                .foregroundColor(AppTheme.textTertiary)
+        }
+    }
+
+    // MARK: - Tab Bar
+
+    private var tabBar: some View {
+        HStack(spacing: 0) {
+            tabButton("로그인", tab: .login)
+            tabButton("회원가입", tab: .signup)
+        }
+    }
+
+    private func tabButton(_ title: String, tab: AuthTab) -> some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedTab = tab
+            }
+        }) {
+            VStack(spacing: 6) {
+                Text(title)
+                    .font(.system(size: 14, weight: selectedTab == tab ? .semibold : .regular))
+                    .foregroundColor(selectedTab == tab ? AppTheme.textPrimary : AppTheme.textTertiary)
+
+                Rectangle()
+                    .fill(selectedTab == tab ? AppTheme.accent : Color.clear)
+                    .frame(height: 2)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Login Form
 
     @State private var email = ""
     @State private var password = ""
 
     private var loginForm: some View {
         VStack(spacing: 16) {
-            // Header
-            VStack(spacing: 4) {
-                Image(systemName: "note.text")
-                    .font(.system(size: 36))
-                    .foregroundColor(AppTheme.accent)
-                Text(AppConfig.appName)
-                    .font(.title2.bold())
-                Text("로그인")
-                    .font(.subheadline)
-                    .foregroundColor(AppTheme.textSecondary)
-            }
-            .padding(.top, 24)
+            NinePADField(label: "이메일", placeholder: "이메일 주소 입력", text: $email)
+            NinePADField(label: "비밀번호", placeholder: "비밀번호 입력", text: $password, isSecure: true)
 
-            Spacer()
-
-            // Form
-            VStack(spacing: 12) {
-                TextField("이메일", text: $email)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.emailAddress)
-
-                SecureField("비밀번호", text: $password)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.password)
-            }
-            .padding(.horizontal)
-
-            // Error
             if let error = authService.errorMessage {
                 Text(error)
-                    .font(.caption)
+                    .font(.system(size: 12))
                     .foregroundColor(AppTheme.danger)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal)
             }
 
-            // Login Button
-            Button(action: {
+            NinePADButton(title: "로그인", isLoading: authService.isLoading) {
                 Task { await authService.login(email: email, password: password) }
-            }) {
-                if authService.isLoading {
-                    ProgressView()
-                        .controlSize(.small)
+            }
+            .disabled(email.isEmpty || password.isEmpty || authService.isLoading)
+        }
+    }
+}
+
+// MARK: - Reusable Components
+
+struct NinePADField: View {
+    let label: String
+    let placeholder: String
+    @Binding var text: String
+    var isSecure: Bool = false
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(AppTheme.textPrimary)
+
+            Group {
+                if isSecure {
+                    SecureField(placeholder, text: $text)
                 } else {
-                    Text("로그인")
-                        .frame(maxWidth: .infinity)
+                    TextField(placeholder, text: $text)
                 }
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(email.isEmpty || password.isEmpty || authService.isLoading)
-            .padding(.horizontal)
-
-            Spacer()
+            .textFieldStyle(.plain)
+            .font(.system(size: 14))
+            .foregroundColor(AppTheme.textPrimary)
+            .padding(.horizontal, 16)
+            .frame(height: AppTheme.fieldHeight)
+            .background(AppTheme.inputBg)
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius)
+                    .stroke(isFocused ? AppTheme.borderActive : Color.clear, lineWidth: 0.5)
+            )
+            .focused($isFocused)
         }
+    }
+}
+
+struct NinePADButton: View {
+    let title: String
+    var isLoading: Bool = false
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(.white)
+                } else {
+                    Text(title)
+                        .font(.system(size: 15, weight: .medium))
+                }
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: AppTheme.buttonHeight)
+            .background(AppTheme.accent)
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius))
+        }
+        .buttonStyle(.plain)
     }
 }

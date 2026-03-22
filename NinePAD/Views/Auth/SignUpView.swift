@@ -8,127 +8,77 @@ struct SignUpView: View {
     @State private var password = ""
     @State private var passwordConfirm = ""
 
-    // Admin signup
+    // Admin
     @State private var orgName = ""
     @State private var adminCode = ""
 
-    // Invite signup
+    // Invite
     @State private var inviteToken = ""
 
-    // Dev member signup (초대 없이 org 코드로 참여)
+    // Dev member
     @State private var orgCode = ""
 
     @State private var signUpMode: SignUpMode = .admin
 
     enum SignUpMode: String, CaseIterable {
-        case admin = "관리자 (Org 생성)"
-        case member = "멤버 (Org 참여)"
-        case invite = "초대 링크 가입"
+        case admin = "관리자"
+        case member = "멤버"
+        case invite = "초대"
 
         static var availableCases: [SignUpMode] {
-            if AppConfig.devMode {
-                return [.admin, .member, .invite]
-            } else {
-                return [.admin, .invite]
-            }
+            AppConfig.devMode ? [.admin, .member, .invite] : [.admin, .invite]
         }
     }
 
     var body: some View {
         VStack(spacing: 16) {
-            // Header
-            HStack {
-                Button("취소") { withAnimation(.easeInOut(duration: 0.2)) { onBack() } }
-                    .buttonStyle(.plain)
-                    .foregroundColor(AppTheme.textSecondary)
-                Spacer()
-                Text("회원가입")
-                    .font(.headline)
-                Spacer()
-                // Balance spacer
-                Button("취소") { }.hidden()
-            }
-            .padding(.horizontal)
-            .padding(.top, 16)
-
             // Mode Picker
-            Picker("가입 방식", selection: $signUpMode) {
+            Picker("", selection: $signUpMode) {
                 ForEach(SignUpMode.availableCases, id: \.self) { mode in
                     Text(mode.rawValue).tag(mode)
                 }
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal)
 
-            // Common fields
-            VStack(spacing: 12) {
-                TextField("이메일", text: $email)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.emailAddress)
+            // Common Fields
+            NinePADField(label: "이메일", placeholder: "이메일 주소 입력", text: $email)
+            NinePADField(label: "비밀번호", placeholder: "비밀번호 입력", text: $password, isSecure: true)
+            NinePADField(label: "비밀번호 확인", placeholder: "비밀번호 재입력", text: $passwordConfirm, isSecure: true)
 
-                SecureField("비밀번호", text: $password)
-                    .textFieldStyle(.roundedBorder)
-
-                SecureField("비밀번호 확인", text: $passwordConfirm)
-                    .textFieldStyle(.roundedBorder)
+            // Mode-specific
+            switch signUpMode {
+            case .admin:
+                NinePADField(label: "조직 이름", placeholder: "조직명 입력", text: $orgName)
+                NinePADField(label: "관리자 인증코드", placeholder: "인증코드 입력", text: $adminCode, isSecure: true)
+            case .member:
+                NinePADField(label: "조직 이름", placeholder: "참여할 조직명 입력", text: $orgCode)
+            case .invite:
+                NinePADField(label: "초대 토큰", placeholder: "초대 토큰 입력", text: $inviteToken)
             }
-            .padding(.horizontal)
 
-            // Mode-specific fields
-            VStack(spacing: 12) {
-                switch signUpMode {
-                case .admin:
-                    TextField("조직 이름", text: $orgName)
-                        .textFieldStyle(.roundedBorder)
-                    SecureField("관리자 인증코드", text: $adminCode)
-                        .textFieldStyle(.roundedBorder)
-                case .member:
-                    TextField("조직 이름 (정확히 입력)", text: $orgCode)
-                        .textFieldStyle(.roundedBorder)
-                case .invite:
-                    TextField("초대 토큰", text: $inviteToken)
-                        .textFieldStyle(.roundedBorder)
-                }
+            // Validation
+            if !passwordConfirm.isEmpty && password != passwordConfirm {
+                Text("비밀번호가 일치하지 않습니다.")
+                    .font(.system(size: 12))
+                    .foregroundColor(AppTheme.warning)
             }
-            .padding(.horizontal)
 
             // Error
             if let error = authService.errorMessage {
                 Text(error)
-                    .font(.caption)
+                    .font(.system(size: 12))
                     .foregroundColor(AppTheme.danger)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal)
             }
-
-            // Password mismatch
-            if !passwordConfirm.isEmpty && password != passwordConfirm {
-                Text("비밀번호가 일치하지 않습니다.")
-                    .font(.caption)
-                    .foregroundColor(AppTheme.warning)
-            }
-
-            Spacer()
 
             // Sign Up Button
-            Button(action: signUp) {
-                if authService.isLoading {
-                    ProgressView()
-                        .controlSize(.small)
-                } else {
-                    Text("가입하기")
-                        .frame(maxWidth: .infinity)
-                }
+            NinePADButton(title: "가입하기", isLoading: authService.isLoading) {
+                signUp()
             }
-            .buttonStyle(.borderedProminent)
             .disabled(!isFormValid || authService.isLoading)
-            .padding(.horizontal)
-            .padding(.bottom, 16)
         }
-        .frame(width: 320, height: 480)
         .interactiveDismissDisabled(authService.isLoading)
         .onAppear {
-            // URL Scheme에서 초대 토큰이 전달된 경우 자동 설정
             if let token = authService.pendingInviteToken {
                 signUpMode = .invite
                 inviteToken = token
@@ -172,7 +122,6 @@ struct SignUpView: View {
                     inviteToken: inviteToken
                 )
             }
-            // 가입 성공 시 ContentView가 자동으로 MainView로 전환
         }
     }
 }

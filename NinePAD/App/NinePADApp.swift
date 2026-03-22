@@ -49,7 +49,7 @@ struct LoginWindowView: View {
             LoginView()
                 .environmentObject(authService)
         }
-        .frame(width: 400, height: 520)
+        .frame(width: AppTheme.loginWidth, height: AppTheme.loginHeight)
         .background(AppTheme.popoverBg)
         .onChange(of: authService.currentSession != nil) { _, isLoggedIn in
             if isLoggedIn {

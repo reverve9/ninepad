@@ -66,6 +66,7 @@ NinePAD/
 - **관리자 인증코드**: `bridge_nine`
 - **개인 계정**: `reverve9`
 - **URL Scheme**: `ninepad://`
+- **테마**: Nine Messenger 라이트 모드 (#FFFFFF 배경, #1C2B4A 네이비 강조)
 
 ## 페이즈 현황
 
