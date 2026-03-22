@@ -229,9 +229,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func disableFocusRing() {
-        // 전역 포커스링 해제
-        NSTextField.defaultFocusRingType = .none
-        NSSecureTextField.defaultFocusRingType = .none
+        // 전역 포커스링 해제 — NSView 서브클래스 swizzling
+        let original = class_getInstanceMethod(NSView.self, #selector(getter: NSView.focusRingType))!
+        let replacement = class_getInstanceMethod(NSView.self, #selector(NSView.ninepad_focusRingType))!
+        method_exchangeImplementations(original, replacement)
     }
 
     private func registerGlobalHotKey() {
@@ -264,5 +265,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
 
         RegisterEventHotKey(keyCode, modifiers, hotKeyID, GetApplicationEventTarget(), 0, &hotKeyRef)
+    }
+}
+
+// MARK: - Focus Ring 전역 해제
+
+extension NSView {
+    @objc func ninepad_focusRingType() -> NSFocusRingType {
+        return .none
     }
 }
