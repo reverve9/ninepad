@@ -103,11 +103,11 @@ struct MemoDetailView: View {
                 }
                 .buttonStyle(.plain)
                 .help("삭제")
-                .alert("메모 삭제", isPresented: $showDeleteConfirm) {
+                .alert("노트 삭제", isPresented: $showDeleteConfirm) {
                     Button("삭제", role: .destructive) { onDelete() }
                     Button("취소", role: .cancel) {}
                 } message: {
-                    Text("이 메모를 삭제하시겠습니까?")
+                    Text("이 노트를 삭제하시겠습니까?")
                 }
             }
         }

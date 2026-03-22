@@ -7,6 +7,9 @@ struct MemoZoneView: View {
     @State private var showNewMemo = false
     @State private var newTitle = ""
     @State private var newContent = ""
+    @State private var newColorDot = "#1C2B4A"
+
+    private let dotColors = ["#1C2B4A", "#EF4444", "#F5A623", "#34C759", "#4EB8FA", "#8B5CF6"]
     @Environment(\.openWindow) var openWindow
     @State private var pushingMemoId: UUID?
     @State private var isPushingAll = false
@@ -19,7 +22,7 @@ struct MemoZoneView: View {
 
             // Zone Label
             HStack {
-                Text("MEMOS")
+                Text("NOTES")
                     .font(.system(size: AppTheme.zoneLabelSize, weight: AppTheme.zoneLabelWeight))
                     .foregroundColor(AppTheme.zoneLabel)
 
@@ -43,7 +46,7 @@ struct MemoZoneView: View {
                     .padding(.bottom, 4)
             }
 
-            // 새 메모 인라인 입력
+            // 새 노트 인라인 입력
             if showNewMemo {
                 newMemoForm
             }
@@ -87,7 +90,7 @@ struct MemoZoneView: View {
                 .font(.system(size: 12))
                 .foregroundColor(AppTheme.textTertiary)
 
-            TextField("메모 검색...", text: $viewModel.searchText)
+            TextField("노트 검색...", text: $viewModel.searchText)
                 .textFieldStyle(.plain)
                 .font(.system(size: 13))
                 .foregroundColor(AppTheme.textPrimary)
@@ -113,7 +116,7 @@ struct MemoZoneView: View {
 
     private var newMemoForm: some View {
         VStack(spacing: 8) {
-            NinePADField(label: "제목", placeholder: "메모 제목", text: $newTitle)
+            NinePADField(label: "제목", placeholder: "노트 제목", text: $newTitle)
 
             TextEditor(text: $newContent)
                 .font(.system(size: 12))
@@ -123,6 +126,26 @@ struct MemoZoneView: View {
                 .padding(8)
                 .background(AppTheme.inputBg)
                 .cornerRadius(AppTheme.cornerRadius)
+
+            // 컬러 도트 선택
+            HStack(spacing: 8) {
+                Text("컬러")
+                    .font(.system(size: 11))
+                    .foregroundColor(AppTheme.textTertiary)
+
+                ForEach(dotColors, id: \.self) { hex in
+                    let colorVal = UInt(hex.replacingOccurrences(of: "#", with: ""), radix: 16) ?? 0
+                    Circle()
+                        .fill(Color(hex: colorVal))
+                        .frame(width: 14, height: 14)
+                        .overlay(
+                            Circle().stroke(Color.black.opacity(newColorDot == hex ? 0.3 : 0), lineWidth: 1.5)
+                        )
+                        .onTapGesture { newColorDot = hex }
+                }
+
+                Spacer()
+            }
 
             HStack {
                 Button("취소") { resetNewMemo() }
@@ -159,7 +182,7 @@ struct MemoZoneView: View {
                 HStack(spacing: 4) {
                     Image(systemName: showNewMemo ? "xmark" : "plus")
                         .font(.system(size: 11))
-                    Text(showNewMemo ? "닫기" : "새 메모")
+                    Text(showNewMemo ? "닫기" : "새 노트")
                         .font(.system(size: 12))
                 }
                 .foregroundColor(AppTheme.accent)
@@ -168,7 +191,7 @@ struct MemoZoneView: View {
 
             Spacer()
 
-            Text("\(viewModel.filteredMemos.count)개 메모")
+            Text("\(viewModel.filteredMemos.count)개 노트")
                 .font(.system(size: 11))
                 .foregroundColor(AppTheme.textTertiary)
 
@@ -198,6 +221,7 @@ struct MemoZoneView: View {
     private func resetNewMemo() {
         newTitle = ""
         newContent = ""
+        newColorDot = "#1C2B4A"
         showNewMemo = false
     }
 

@@ -59,11 +59,13 @@ struct Memo: Codable, Identifiable, Hashable {
     var orgId: UUID
     var title: String
     var content: String
+    var colorDot: String?
     let createdAt: Date
     var updatedAt: Date
 
     enum CodingKeys: String, CodingKey {
         case id, title, content
+        case colorDot = "color_dot"
         case userId = "user_id"
         case orgId = "org_id"
         case createdAt = "created_at"

@@ -34,7 +34,8 @@ struct ContentView: View {
                 }
             }
         }
-        .frame(width: AppTheme.mainWidth, height: AppTheme.mainHeight)
+        .frame(minWidth: AppTheme.mainWidth, minHeight: AppTheme.mainHeight)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(AppTheme.popoverBg)
         .onChange(of: authService.currentUser?.id) { _, _ in
             Task { await checkOrgStatus() }
@@ -148,7 +149,7 @@ struct ContentView: View {
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(AppTheme.textPrimary)
 
-            Text("메모와 스니펫을 사용하려면\nOrg가 필요합니다.")
+            Text("노트와 스니펫을 사용하려면\nOrg가 필요합니다.")
                 .font(.system(size: 13))
                 .foregroundColor(AppTheme.textSecondary)
                 .multilineTextAlignment(.center)
