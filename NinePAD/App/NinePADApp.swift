@@ -150,46 +150,50 @@ struct MainWindowView: View {
     }
 }
 
-// MARK: - Memo Window View (독립 창)
+// MARK: - Memo Window View (독립 창 — 기존 노트 / 새 노트)
 
 struct MemoWindowView: View {
     @EnvironmentObject var authService: AuthService
-    let memoId: UUID
+    let memoId: UUID  // 새 노트일 경우 더미 UUID
     @State private var memo: Memo?
     @State private var isLoading = true
+    @State private var isNewNote = false
 
     private let memoService = MemoService()
 
     var body: some View {
         Group {
-            if let memo {
+            if isNewNote {
+                MemoDetailView(
+                    memo: nil,
+                    onSave: { title, content, colorDot in
+                        Task { await createNote(title: title, content: content, colorDot: colorDot) }
+                    }
+                )
+            } else if let memo {
                 MemoDetailView(
                     memo: memo,
+                    onSave: { _, _, _ in },
                     onUpdate: { title, content in
                         Task {
-                            let updated = try? await memoService.updateMemo(id: memoId, title: title, content: content)
+                            let updated = try? await memoService.updateMemo(id: memo.id, title: title, content: content)
                             if let updated { self.memo = updated }
                         }
                     },
                     onDelete: {
-                        Task {
-                            try? await memoService.deleteMemo(id: memoId)
-                            // 창 닫기는 사용자가 수동으로
-                        }
+                        Task { try? await memoService.deleteMemo(id: memo.id) }
                     },
                     onPinToSnippet: {
-                        // 스니펫 생성
-                        if let user = authService.currentUser, let orgId = user.orgId, let memo = self.memo {
+                        if let user = authService.currentUser, let orgId = user.orgId {
                             Task {
-                                let service = SnippetService()
-                                _ = try? await service.createSnippet(userId: user.id, orgId: orgId, title: memo.title, content: memo.content)
+                                _ = try? await SnippetService().createSnippet(
+                                    userId: user.id, orgId: orgId, title: memo.title, content: memo.content
+                                )
                             }
                         }
                     },
                     onPush: {
-                        if let memo = self.memo {
-                            Task { try? await GitService.pushMemo(memo) }
-                        }
+                        Task { try? await GitService.pushMemo(memo) }
                     }
                 )
             } else if isLoading {
@@ -199,7 +203,8 @@ struct MemoWindowView: View {
                         .font(.system(size: 12))
                         .foregroundColor(AppTheme.textTertiary)
                 }
-                .frame(width: 360, height: 420)
+                .frame(minWidth: AppTheme.memoWidth, minHeight: AppTheme.memoHeight)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(AppTheme.popoverBg)
             }
         }
@@ -207,15 +212,37 @@ struct MemoWindowView: View {
     }
 
     private func loadMemo() async {
+        // 새 노트용 더미 UUID 체크 (00000000-...)
+        if memoId == MemoWindowHelper.newNoteId {
+            isNewNote = true
+            isLoading = false
+            return
+        }
         guard let user = authService.currentUser, let orgId = user.orgId else { return }
         do {
             let memos = try await memoService.fetchMemos(orgId: orgId)
             memo = memos.first { $0.id == memoId }
         } catch {
-            print("[Memo] 로드 실패: \(error)")
+            print("[Note] 로드 실패: \(error)")
         }
         isLoading = false
     }
+
+    private func createNote(title: String, content: String, colorDot: String) async {
+        guard let user = authService.currentUser, let orgId = user.orgId else { return }
+        do {
+            let newMemo = try await memoService.createMemo(userId: user.id, orgId: orgId, title: title, content: content)
+            self.memo = newMemo
+            isNewNote = false
+        } catch {
+            print("[Note] 생성 실패: \(error)")
+        }
+    }
+}
+
+// 새 노트 구분용 헬퍼
+enum MemoWindowHelper {
+    static let newNoteId = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
 }
 
 // MARK: - AppDelegate (글로벌 단축키)

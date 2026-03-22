@@ -4,12 +4,7 @@ struct MemoZoneView: View {
     @EnvironmentObject var authService: AuthService
     @ObservedObject var snippetViewModel: SnippetViewModel
     @StateObject private var viewModel = MemoViewModel()
-    @State private var showNewMemo = false
-    @State private var newTitle = ""
-    @State private var newContent = ""
-    @State private var newColorDot = "#1C2B4A"
-
-    private let dotColors = ["#1C2B4A", "#EF4444", "#F5A623", "#34C759", "#4EB8FA", "#8B5CF6"]
+    // 새 노트는 독립 Window로 열림
     @Environment(\.openWindow) var openWindow
     @State private var pushingMemoId: UUID?
     @State private var isPushingAll = false
@@ -46,12 +41,7 @@ struct MemoZoneView: View {
                     .padding(.bottom, 4)
             }
 
-            // 새 노트 인라인 입력
-            if showNewMemo {
-                newMemoForm
-            }
-
-            // 메모 리스트
+            // 노트 리스트
             ScrollView {
                 LazyVStack(spacing: 2) {
                     ForEach(viewModel.filteredMemos) { memo in
@@ -112,77 +102,17 @@ struct MemoZoneView: View {
         .padding(.top, 8)
     }
 
-    // MARK: - New Memo Form
-
-    private var newMemoForm: some View {
-        VStack(spacing: 8) {
-            NinePADField(label: "제목", placeholder: "노트 제목", text: $newTitle)
-
-            TextEditor(text: $newContent)
-                .font(.system(size: 12))
-                .foregroundColor(AppTheme.textPrimary)
-                .scrollContentBackground(.hidden)
-                .frame(minHeight: 60, maxHeight: 100)
-                .padding(8)
-                .background(AppTheme.inputBg)
-                .cornerRadius(AppTheme.cornerRadius)
-
-            // 컬러 도트 선택
-            HStack(spacing: 8) {
-                Text("컬러")
-                    .font(.system(size: 11))
-                    .foregroundColor(AppTheme.textTertiary)
-
-                ForEach(dotColors, id: \.self) { hex in
-                    let colorVal = UInt(hex.replacingOccurrences(of: "#", with: ""), radix: 16) ?? 0
-                    Circle()
-                        .fill(Color(hex: colorVal))
-                        .frame(width: 14, height: 14)
-                        .overlay(
-                            Circle().stroke(Color.black.opacity(newColorDot == hex ? 0.3 : 0), lineWidth: 1.5)
-                        )
-                        .onTapGesture { newColorDot = hex }
-                }
-
-                Spacer()
-            }
-
-            HStack {
-                Button("취소") { resetNewMemo() }
-                    .buttonStyle(.plain)
-                    .foregroundColor(AppTheme.textTertiary)
-                    .font(.system(size: 12))
-
-                Spacer()
-
-                Button("저장") {
-                    Task {
-                        await viewModel.createMemo(title: newTitle, content: newContent)
-                        resetNewMemo()
-                    }
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(newTitle.isEmpty ? AppTheme.textTertiary : AppTheme.accent)
-                .font(.system(size: 12, weight: .medium))
-                .disabled(newTitle.isEmpty)
-            }
-        }
-        .padding(12)
-        .background(AppTheme.inputBg.opacity(0.5))
-        .cornerRadius(AppTheme.cornerRadius)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 4)
-    }
-
     // MARK: - Bottom Bar
 
     private var bottomBar: some View {
         HStack {
-            Button(action: { showNewMemo.toggle() }) {
+            Button(action: {
+                openWindow(value: MemoWindowHelper.newNoteId)
+            }) {
                 HStack(spacing: 4) {
-                    Image(systemName: showNewMemo ? "xmark" : "plus")
+                    Image(systemName: "plus")
                         .font(.system(size: 11))
-                    Text(showNewMemo ? "닫기" : "새 노트")
+                    Text("새 노트")
                         .font(.system(size: 12))
                 }
                 .foregroundColor(AppTheme.accent)
@@ -216,13 +146,6 @@ struct MemoZoneView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(AppTheme.border.opacity(0.5))
-    }
-
-    private func resetNewMemo() {
-        newTitle = ""
-        newContent = ""
-        newColorDot = "#1C2B4A"
-        showNewMemo = false
     }
 
     private func pushMemo(_ memo: Memo) {
