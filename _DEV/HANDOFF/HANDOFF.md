@@ -19,8 +19,8 @@ NinePAD/
 ├── NinePAD.xcodeproj/
 ├── NinePAD/
 │   ├── App/
-│   │   ├── NinePADApp.swift       ← @main, MenuBarExtra + 단축키 + URL Scheme
-│   │   └── ContentView.swift
+│   │   ├── NinePADApp.swift       ← @main, 로그인 Window + MenuBarExtra + 단축키
+│   │   └── ContentView.swift      ← 팝오버 메인 (계정바 + MainView)
 │   ├── Views/
 │   │   ├── Auth/
 │   │   │   ├── LoginView.swift

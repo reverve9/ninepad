@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var authService: AuthService
+    @Environment(\.openWindow) var openWindow
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -37,7 +38,10 @@ struct ProfileView: View {
                 Divider().background(AppTheme.border)
 
                 Button(action: {
-                    Task { await authService.logout() }
+                    Task {
+                        await authService.logout()
+                        openWindow(id: "login")
+                    }
                 }) {
                     HStack {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
