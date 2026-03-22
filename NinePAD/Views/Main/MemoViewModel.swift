@@ -130,7 +130,8 @@ final class MemoViewModel: ObservableObject {
             onInsert: { [weak self] memo in
                 Task { @MainActor in
                     guard let self else { return }
-                    if !self.memos.contains(where: { $0.id == memo.id }) {
+                    // 삭제된 노트는 추가하지 않음
+                    if !memo.isDeleted && !self.memos.contains(where: { $0.id == memo.id }) {
                         self.memos.insert(memo, at: 0)
                     }
                 }
@@ -138,8 +139,14 @@ final class MemoViewModel: ObservableObject {
             onUpdate: { [weak self] memo in
                 Task { @MainActor in
                     guard let self else { return }
-                    if let index = self.memos.firstIndex(where: { $0.id == memo.id }) {
+                    if memo.isDeleted {
+                        // 소프트 딜리트 → 리스트에서 제거
+                        self.memos.removeAll { $0.id == memo.id }
+                    } else if let index = self.memos.firstIndex(where: { $0.id == memo.id }) {
                         self.memos[index] = memo
+                    } else {
+                        // 복원된 노트 → 리스트에 추가
+                        self.memos.insert(memo, at: 0)
                     }
                 }
             },
