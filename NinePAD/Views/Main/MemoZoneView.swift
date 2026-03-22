@@ -5,7 +5,7 @@ struct MemoZoneView: View {
     @ObservedObject var snippetViewModel: SnippetViewModel
     @StateObject private var viewModel = MemoViewModel()
     @State private var showNewMemo = false
-    @State private var showSettings = false
+    // showSettings는 MainView로 이동
     @State private var newTitle = ""
     @State private var newContent = ""
     @State private var pushingMemoId: UUID?
@@ -185,7 +185,7 @@ struct MemoZoneView: View {
             Spacer()
 
             // 전체 푸시 (admin만)
-            if authService.currentUser?.role == .admin {
+            if authService.currentUser?.isAdmin == true {
                 Button(action: pushAllMemos) {
                     if isPushingAll {
                         ProgressView().controlSize(.mini)
@@ -199,21 +199,10 @@ struct MemoZoneView: View {
                 .disabled(isPushingAll)
                 .help("전체 메모 Git 푸시")
             }
-
-            Button(action: { showSettings = true }) {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 12))
-                    .foregroundColor(AppTheme.textTertiary)
-            }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(AppTheme.border.opacity(0.5))
-        .sheet(isPresented: $showSettings) {
-            SettingsView()
-                .environmentObject(authService)
-        }
     }
 
     private func resetNewMemo() {

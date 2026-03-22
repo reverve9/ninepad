@@ -7,7 +7,7 @@ struct NinePADApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        // 로그인 Window (비로그인 시 자동 오픈)
+        // 로그인 Window
         Window("NinePAD", id: "login") {
             LoginWindowView()
                 .environmentObject(authService)
@@ -19,12 +19,21 @@ struct NinePADApp: App {
         .windowResizability(.contentSize)
         .defaultPosition(.center)
 
-        // 메뉴바 팝오버 (로그인 후)
-        MenuBarExtra(AppConfig.appName, systemImage: "note.text") {
-            ContentView()
+        // 메인 Window
+        Window("NinePAD", id: "main") {
+            MainWindowView()
                 .environmentObject(authService)
         }
-        .menuBarExtraStyle(.window)
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
+        .defaultPosition(.center)
+
+        // 메뉴바 아이콘 (클릭 시 메인 Window 토글)
+        MenuBarExtra(AppConfig.appName, systemImage: "note.text") {
+            MenuBarContentView()
+                .environmentObject(authService)
+        }
+        .menuBarExtraStyle(.menu)
     }
 
     private func handleInviteURL(_ url: URL) {
@@ -33,8 +42,57 @@ struct NinePADApp: App {
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let token = components.queryItems?.first(where: { $0.name == "token" })?.value
         else { return }
-
         authService.pendingInviteToken = token
+    }
+}
+
+// MARK: - Menu Bar Content (간단한 메뉴)
+
+struct MenuBarContentView: View {
+    @EnvironmentObject var authService: AuthService
+    @Environment(\.openWindow) var openWindow
+
+    var body: some View {
+        if authService.currentSession != nil {
+            Button("NinePAD 열기") {
+                openWindow(id: "main")
+                NSApp.activate(ignoringOtherApps: true)
+            }
+            .keyboardShortcut("n", modifiers: [.command, .shift])
+
+            Divider()
+
+            if let user = authService.currentUser {
+                Text(user.email)
+                    .foregroundColor(.secondary)
+
+                if user.isSuperAdmin {
+                    Text("Super Admin")
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Divider()
+
+            Button("로그아웃") {
+                Task {
+                    await authService.logout()
+                    openWindow(id: "login")
+                }
+            }
+        } else {
+            Button("로그인") {
+                openWindow(id: "login")
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        }
+
+        Divider()
+
+        Button("종료") {
+            NSApplication.shared.terminate(nil)
+        }
+        .keyboardShortcut("q")
     }
 }
 
@@ -43,6 +101,7 @@ struct NinePADApp: App {
 struct LoginWindowView: View {
     @EnvironmentObject var authService: AuthService
     @Environment(\.dismissWindow) var dismissWindow
+    @Environment(\.openWindow) var openWindow
 
     var body: some View {
         VStack(spacing: 0) {
@@ -54,6 +113,8 @@ struct LoginWindowView: View {
         .onChange(of: authService.currentSession != nil) { _, isLoggedIn in
             if isLoggedIn {
                 dismissWindow(id: "login")
+                openWindow(id: "main")
+                NSApp.activate(ignoringOtherApps: true)
             }
         }
         .onAppear {
@@ -61,6 +122,28 @@ struct LoginWindowView: View {
                 dismissWindow(id: "login")
             }
         }
+    }
+}
+
+// MARK: - Main Window View
+
+struct MainWindowView: View {
+    @EnvironmentObject var authService: AuthService
+    @Environment(\.openWindow) var openWindow
+
+    var body: some View {
+        ContentView()
+            .environmentObject(authService)
+            .onAppear {
+                if authService.currentSession == nil {
+                    openWindow(id: "login")
+                }
+            }
+            .onChange(of: authService.currentSession == nil) { _, isLoggedOut in
+                if isLoggedOut {
+                    openWindow(id: "login")
+                }
+            }
     }
 }
 
@@ -74,9 +157,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func registerGlobalHotKey() {
-        // Cmd+Shift+N
         var hotKeyID = EventHotKeyID()
-        hotKeyID.signature = OSType(0x4E504144) // "NPAD"
+        hotKeyID.signature = OSType(0x4E504144)
         hotKeyID.id = 1
 
         let modifiers: UInt32 = UInt32(cmdKey | shiftKey)
@@ -87,17 +169,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         InstallEventHandler(
             GetApplicationEventTarget(),
             { (_, event, _) -> OSStatus in
-                if let button = NSApp.windows.first(where: {
-                    $0.className.contains("StatusBar") || $0.className.contains("MenuBarExtra")
-                }) {
-                    if NSApp.windows.contains(where: {
-                        $0.isVisible && $0.className.contains("MenuBarExtra") && !$0.className.contains("StatusBar")
-                    }) {
-                        NSApp.windows.filter {
-                            $0.isVisible && $0.className.contains("MenuBarExtra") && !$0.className.contains("StatusBar")
-                        }.forEach { $0.orderOut(nil) }
+                // 메인 Window 토글
+                if let mainWindow = NSApp.windows.first(where: { $0.identifier?.rawValue == "main" || $0.title == "NinePAD" }) {
+                    if mainWindow.isVisible {
+                        mainWindow.orderOut(nil)
                     } else {
-                        button.makeKeyAndOrderFront(nil)
+                        mainWindow.makeKeyAndOrderFront(nil)
                         NSApp.activate(ignoringOtherApps: true)
                     }
                 }
