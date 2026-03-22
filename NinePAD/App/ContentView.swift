@@ -34,7 +34,7 @@ struct ContentView: View {
                 }
             }
         }
-        .frame(width: 480, height: 600)
+        .frame(width: AppTheme.mainWidth, height: AppTheme.mainHeight)
         .background(AppTheme.popoverBg)
         .onChange(of: authService.currentUser?.id) { _, _ in
             Task { await checkOrgStatus() }

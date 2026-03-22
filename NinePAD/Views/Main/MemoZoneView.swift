@@ -7,7 +7,7 @@ struct MemoZoneView: View {
     @State private var showNewMemo = false
     @State private var newTitle = ""
     @State private var newContent = ""
-    @State private var selectedMemo: Memo?
+    @Environment(\.openWindow) var openWindow
     @State private var pushingMemoId: UUID?
     @State private var isPushingAll = false
     @State private var pushAllDone = false
@@ -54,7 +54,9 @@ struct MemoZoneView: View {
                     ForEach(viewModel.filteredMemos) { memo in
                         MemoRowView(
                             memo: memo,
-                            onTap: { selectedMemo = memo },
+                            onTap: {
+                                openWindow(value: memo.id)
+                            },
                             onDelete: { Task { await viewModel.deleteMemo(id: memo.id) } }
                         )
                     }
@@ -74,25 +76,7 @@ struct MemoZoneView: View {
         .onDisappear {
             Task { await viewModel.stopRealtime() }
         }
-        .sheet(item: $selectedMemo) { memo in
-            MemoDetailView(
-                memo: memo,
-                onUpdate: { title, content in
-                    Task { await viewModel.updateMemo(id: memo.id, title: title, content: content) }
-                    selectedMemo = nil
-                },
-                onDelete: {
-                    Task { await viewModel.deleteMemo(id: memo.id) }
-                    selectedMemo = nil
-                },
-                onPinToSnippet: {
-                    Task { await snippetViewModel.createFromMemo(title: memo.title, content: memo.content) }
-                },
-                onPush: {
-                    pushMemo(memo)
-                }
-            )
-        }
+        // 메모 상세는 독립 Window로 열림 (openWindow(value: memo.id))
     }
 
     // MARK: - Search Bar

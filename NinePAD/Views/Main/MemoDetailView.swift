@@ -26,7 +26,7 @@ struct MemoDetailView: View {
                 readView
             }
         }
-        .frame(width: 360, height: 420)
+        .frame(width: AppTheme.memoWidth, height: AppTheme.memoHeight)
         .background(AppTheme.popoverBg)
     }
 

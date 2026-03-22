@@ -11,9 +11,7 @@ struct NinePADApp: App {
         Window("NinePAD", id: "login") {
             LoginWindowView()
                 .environmentObject(authService)
-                .onOpenURL { url in
-                    handleInviteURL(url)
-                }
+                .onOpenURL { url in handleInviteURL(url) }
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
@@ -25,10 +23,23 @@ struct NinePADApp: App {
                 .environmentObject(authService)
         }
         .windowStyle(.hiddenTitleBar)
-        .windowResizability(.contentSize)
+        .windowResizability(.contentMinSize)
+        .defaultSize(width: 380, height: 520)
         .defaultPosition(.center)
 
-        // 메뉴바 아이콘 (클릭 시 메인 Window 토글)
+        // 메모 상세 Window (독립 창)
+        WindowGroup("메모", for: UUID.self) { $memoId in
+            if let memoId {
+                MemoWindowView(memoId: memoId)
+                    .environmentObject(authService)
+            }
+        }
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentMinSize)
+        .defaultSize(width: 360, height: 420)
+        .defaultPosition(.center)
+
+        // 메뉴바
         MenuBarExtra(AppConfig.appName, systemImage: "note.text") {
             MenuBarContentView()
                 .environmentObject(authService)
@@ -46,7 +57,7 @@ struct NinePADApp: App {
     }
 }
 
-// MARK: - Menu Bar Content (간단한 메뉴)
+// MARK: - Menu Bar Content
 
 struct MenuBarContentView: View {
     @EnvironmentObject var authService: AuthService
@@ -63,12 +74,9 @@ struct MenuBarContentView: View {
             Divider()
 
             if let user = authService.currentUser {
-                Text(user.email)
-                    .foregroundColor(.secondary)
-
+                Text(user.email).foregroundColor(.secondary)
                 if user.isSuperAdmin {
-                    Text("Super Admin")
-                        .foregroundColor(.secondary)
+                    Text("Super Admin").foregroundColor(.secondary)
                 }
             }
 
@@ -88,11 +96,8 @@ struct MenuBarContentView: View {
         }
 
         Divider()
-
-        Button("종료") {
-            NSApplication.shared.terminate(nil)
-        }
-        .keyboardShortcut("q")
+        Button("종료") { NSApplication.shared.terminate(nil) }
+            .keyboardShortcut("q")
     }
 }
 
@@ -104,24 +109,22 @@ struct LoginWindowView: View {
     @Environment(\.openWindow) var openWindow
 
     var body: some View {
-        VStack(spacing: 0) {
-            LoginView()
-                .environmentObject(authService)
-        }
-        .frame(width: AppTheme.loginWidth, height: AppTheme.loginHeight)
-        .background(AppTheme.popoverBg)
-        .onChange(of: authService.currentSession != nil) { _, isLoggedIn in
-            if isLoggedIn {
-                dismissWindow(id: "login")
-                openWindow(id: "main")
-                NSApp.activate(ignoringOtherApps: true)
+        LoginView()
+            .environmentObject(authService)
+            .frame(width: AppTheme.loginWidth, height: AppTheme.loginHeight)
+            .background(AppTheme.popoverBg)
+            .onChange(of: authService.currentSession != nil) { _, isLoggedIn in
+                if isLoggedIn {
+                    dismissWindow(id: "login")
+                    openWindow(id: "main")
+                    NSApp.activate(ignoringOtherApps: true)
+                }
             }
-        }
-        .onAppear {
-            if authService.currentSession != nil {
-                dismissWindow(id: "login")
+            .onAppear {
+                if authService.currentSession != nil {
+                    dismissWindow(id: "login")
+                }
             }
-        }
     }
 }
 
@@ -147,6 +150,74 @@ struct MainWindowView: View {
     }
 }
 
+// MARK: - Memo Window View (독립 창)
+
+struct MemoWindowView: View {
+    @EnvironmentObject var authService: AuthService
+    let memoId: UUID
+    @State private var memo: Memo?
+    @State private var isLoading = true
+
+    private let memoService = MemoService()
+
+    var body: some View {
+        Group {
+            if let memo {
+                MemoDetailView(
+                    memo: memo,
+                    onUpdate: { title, content in
+                        Task {
+                            let updated = try? await memoService.updateMemo(id: memoId, title: title, content: content)
+                            if let updated { self.memo = updated }
+                        }
+                    },
+                    onDelete: {
+                        Task {
+                            try? await memoService.deleteMemo(id: memoId)
+                            // 창 닫기는 사용자가 수동으로
+                        }
+                    },
+                    onPinToSnippet: {
+                        // 스니펫 생성
+                        if let user = authService.currentUser, let orgId = user.orgId, let memo = self.memo {
+                            Task {
+                                let service = SnippetService()
+                                _ = try? await service.createSnippet(userId: user.id, orgId: orgId, title: memo.title, content: memo.content)
+                            }
+                        }
+                    },
+                    onPush: {
+                        if let memo = self.memo {
+                            Task { try? await GitService.pushMemo(memo) }
+                        }
+                    }
+                )
+            } else if isLoading {
+                VStack {
+                    ProgressView()
+                    Text("로딩 중...")
+                        .font(.system(size: 12))
+                        .foregroundColor(AppTheme.textTertiary)
+                }
+                .frame(width: 360, height: 420)
+                .background(AppTheme.popoverBg)
+            }
+        }
+        .task { await loadMemo() }
+    }
+
+    private func loadMemo() async {
+        guard let user = authService.currentUser, let orgId = user.orgId else { return }
+        do {
+            let memos = try await memoService.fetchMemos(orgId: orgId)
+            memo = memos.first { $0.id == memoId }
+        } catch {
+            print("[Memo] 로드 실패: \(error)")
+        }
+        isLoading = false
+    }
+}
+
 // MARK: - AppDelegate (글로벌 단축키)
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -154,6 +225,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         registerGlobalHotKey()
+        disableFocusRing()
+    }
+
+    private func disableFocusRing() {
+        // 전역 포커스링 해제
+        NSTextField.defaultFocusRingType = .none
+        NSSecureTextField.defaultFocusRingType = .none
     }
 
     private func registerGlobalHotKey() {
@@ -169,8 +247,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         InstallEventHandler(
             GetApplicationEventTarget(),
             { (_, event, _) -> OSStatus in
-                // 메인 Window 토글
-                if let mainWindow = NSApp.windows.first(where: { $0.identifier?.rawValue == "main" || $0.title == "NinePAD" }) {
+                if let mainWindow = NSApp.windows.first(where: { $0.title == "NinePAD" && !$0.className.contains("StatusBar") }) {
                     if mainWindow.isVisible {
                         mainWindow.orderOut(nil)
                     } else {

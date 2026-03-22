@@ -40,6 +40,14 @@ enum AppTheme {
     static let loginHeight: CGFloat = 540
     static let fieldHeight: CGFloat = 44
     static let buttonHeight: CGFloat = 48
+
+    // MARK: - Main
+    static let mainWidth: CGFloat = 380
+    static let mainHeight: CGFloat = 520
+
+    // MARK: - Memo Detail
+    static let memoWidth: CGFloat = 360
+    static let memoHeight: CGFloat = 420
 }
 
 // MARK: - Color Hex Extension
