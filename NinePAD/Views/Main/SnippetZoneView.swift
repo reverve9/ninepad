@@ -4,9 +4,6 @@ struct SnippetZoneView: View {
     @ObservedObject var viewModel: SnippetViewModel
     @State private var copiedId: UUID?
     @State private var isHoveringId: UUID?
-    @State private var editingId: UUID?
-    @State private var editTitle = ""
-    @State private var editContent = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -43,11 +40,7 @@ struct SnippetZoneView: View {
                     .padding(.vertical, 12)
             } else {
                 ForEach(viewModel.snippets) { snippet in
-                    if editingId == snippet.id {
-                        editRow(snippet)
-                    } else {
-                        snippetRow(snippet)
-                    }
+                    snippetRow(snippet)
                 }
             }
         }
@@ -67,21 +60,14 @@ struct SnippetZoneView: View {
 
             Spacer()
 
-            // Hover 시 편집/삭제
+            // Hover 시 삭제
             if isHoveringId == snippet.id {
-                Button(action: { startEditing(snippet) }) {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 10))
-                        .foregroundColor(AppTheme.textTertiary)
-                }
-                .buttonStyle(.plain)
-
                 Button(action: {
                     Task { await viewModel.deleteSnippet(id: snippet.id) }
                 }) {
-                    Image(systemName: "trash")
-                        .font(.system(size: 10))
-                        .foregroundColor(AppTheme.danger.opacity(0.7))
+                    Image(systemName: "xmark")
+                        .font(.system(size: 9))
+                        .foregroundColor(AppTheme.textTertiary)
                 }
                 .buttonStyle(.plain)
             }
@@ -105,56 +91,7 @@ struct SnippetZoneView: View {
         }
     }
 
-    // MARK: - Edit Row
-
-    @ViewBuilder
-    private func editRow(_ snippet: Snippet) -> some View {
-        VStack(spacing: 6) {
-            TextField("제목", text: $editTitle)
-                .textFieldStyle(.plain)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(AppTheme.textPrimary)
-
-            TextField("내용", text: $editContent)
-                .textFieldStyle(.plain)
-                .font(.system(size: 12))
-                .foregroundColor(AppTheme.textSecondary)
-
-            HStack {
-                Button("취소") {
-                    editingId = nil
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(AppTheme.textTertiary)
-                .font(.system(size: 11))
-
-                Spacer()
-
-                Button("저장") {
-                    Task {
-                        await viewModel.updateSnippet(id: snippet.id, title: editTitle, content: editContent)
-                        editingId = nil
-                    }
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(AppTheme.accent)
-                .font(.system(size: 11, weight: .medium))
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .background(AppTheme.inputBg)
-        .cornerRadius(6)
-        .padding(.horizontal, 8)
-    }
-
     // MARK: - Helpers
-
-    private func startEditing(_ snippet: Snippet) {
-        editTitle = snippet.title
-        editContent = snippet.content
-        editingId = snippet.id
-    }
 
     private func copyToClipboard(_ snippet: Snippet) {
         NSPasteboard.general.clearContents()
