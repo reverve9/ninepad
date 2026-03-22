@@ -31,6 +31,7 @@ struct SignUpView: View {
     }
 
     var body: some View {
+        ScrollView {
         VStack(spacing: 16) {
             // Mode Picker
             Picker("", selection: $signUpMode) {
@@ -76,6 +77,7 @@ struct SignUpView: View {
                 signUp()
             }
             .disabled(!isFormValid || authService.isLoading)
+        }
         }
         .interactiveDismissDisabled(authService.isLoading)
         .onAppear {
