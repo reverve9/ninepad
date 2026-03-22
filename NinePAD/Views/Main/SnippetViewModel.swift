@@ -55,10 +55,16 @@ final class SnippetViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Create from Memo
+    // MARK: - Create from Memo (중복 방지)
 
-    func createFromMemo(title: String, content: String) async {
+    func createFromMemo(title: String, content: String) async -> Bool {
+        // 같은 title + content가 이미 있으면 중복
+        if snippets.contains(where: { $0.title == title && $0.content == content }) {
+            errorMessage = "이미 동일한 스니펫이 존재합니다."
+            return false
+        }
         await createSnippet(title: title, content: content)
+        return true
     }
 
     // MARK: - Update

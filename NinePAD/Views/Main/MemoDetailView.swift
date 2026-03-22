@@ -13,6 +13,7 @@ struct MemoDetailView: View {
     @State private var editContent: String
     @State private var selectedColor: String
     @State private var showDeleteConfirm = false
+    @State private var pinned = false
 
     private let dotColors = ["#1C2B4A", "#EF4444", "#F5A623", "#34C759", "#4EB8FA", "#8B5CF6"]
 
@@ -118,13 +119,26 @@ struct MemoDetailView: View {
                 .disabled(editTitle.isEmpty)
             } else {
                 if let onPinToSnippet {
-                    Button(action: onPinToSnippet) {
-                        Image(systemName: "pin")
-                            .font(.system(size: 11))
-                            .foregroundColor(AppTheme.textTertiary)
+                    Button(action: {
+                        onPinToSnippet()
+                        withAnimation { pinned = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                            withAnimation { pinned = false }
+                        }
+                    }) {
+                        HStack(spacing: 3) {
+                            Image(systemName: pinned ? "pin.fill" : "pin")
+                                .font(.system(size: 11))
+                            if pinned {
+                                Text("추가됨")
+                                    .font(.system(size: 10))
+                            }
+                        }
+                        .foregroundColor(pinned ? AppTheme.success : AppTheme.textTertiary)
                     }
                     .buttonStyle(.plain)
                     .help("스니펫으로 올리기")
+                    .disabled(pinned)
                 }
 
                 if let onPush {
