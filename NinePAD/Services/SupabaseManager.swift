@@ -12,7 +12,10 @@ final class SupabaseManager {
         }
         client = SupabaseClient(
             supabaseURL: url,
-            supabaseKey: AppConfig.supabaseAnonKey
+            supabaseKey: AppConfig.supabaseAnonKey,
+            options: .init(
+                auth: .init(emitLocalSessionAsInitialSession: true)
+            )
         )
     }
 }
