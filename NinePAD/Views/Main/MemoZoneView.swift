@@ -69,7 +69,9 @@ struct MemoZoneView: View {
         .onDisappear {
             Task { await viewModel.stopRealtime() }
         }
-        // 메모 상세는 독립 Window로 열림 (openWindow(value: memo.id))
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            Task { await viewModel.loadMemos() }
+        }
     }
 
     // MARK: - Search Bar
