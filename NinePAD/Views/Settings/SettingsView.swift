@@ -34,6 +34,10 @@ struct SettingsView: View {
 
                 Divider().background(AppTheme.border)
 
+                TrashView()
+
+                Divider().background(AppTheme.border)
+
                 GitSettingsView()
             }
         }

@@ -78,14 +78,46 @@ final class MemoViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Delete
+    // MARK: - Soft Delete
 
     func deleteMemo(id: UUID) async {
         do {
             try await memoService.deleteMemo(id: id)
             memos.removeAll { $0.id == id }
         } catch {
-            errorMessage = "메모 삭제 실패: \(error.localizedDescription)"
+            errorMessage = "노트 삭제 실패: \(error.localizedDescription)"
+        }
+    }
+
+    // MARK: - Trash (휴지통)
+
+    @Published var trashedMemos: [Memo] = []
+
+    func loadTrashedMemos() async {
+        guard let orgId else { return }
+        do {
+            trashedMemos = try await memoService.fetchDeletedMemos(orgId: orgId)
+        } catch {
+            errorMessage = "휴지통 로드 실패: \(error.localizedDescription)"
+        }
+    }
+
+    func restoreMemo(id: UUID) async {
+        do {
+            try await memoService.restoreMemo(id: id)
+            trashedMemos.removeAll { $0.id == id }
+            await loadMemos()
+        } catch {
+            errorMessage = "복원 실패: \(error.localizedDescription)"
+        }
+    }
+
+    func permanentlyDeleteMemo(id: UUID) async {
+        do {
+            try await memoService.permanentlyDeleteMemo(id: id)
+            trashedMemos.removeAll { $0.id == id }
+        } catch {
+            errorMessage = "영구 삭제 실패: \(error.localizedDescription)"
         }
     }
 

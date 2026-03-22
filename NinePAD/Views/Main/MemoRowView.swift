@@ -6,6 +6,7 @@ struct MemoRowView: View {
     var onDelete: () -> Void
 
     @State private var isHovering = false
+    @State private var showDeleteConfirm = false
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -51,7 +52,7 @@ struct MemoRowView: View {
 
                 // 삭제 (hover 시)
                 if isHovering {
-                    Button(action: { onDelete() }) {
+                    Button(action: { showDeleteConfirm = true }) {
                         Image(systemName: "xmark")
                             .font(.system(size: 9))
                             .foregroundColor(AppTheme.textTertiary)
@@ -67,6 +68,12 @@ struct MemoRowView: View {
         .buttonStyle(.plain)
         .onHover { hovering in
             isHovering = hovering
+        }
+        .alert("노트 삭제", isPresented: $showDeleteConfirm) {
+            Button("휴지통으로 이동", role: .destructive) { onDelete() }
+            Button("취소", role: .cancel) {}
+        } message: {
+            Text("이 노트를 휴지통으로 이동하시겠습니까?\n설정에서 복원할 수 있습니다.")
         }
     }
 }

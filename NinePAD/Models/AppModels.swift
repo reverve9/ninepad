@@ -62,6 +62,7 @@ struct Memo: Codable, Identifiable, Hashable {
     var colorDot: String?
     let createdAt: Date
     var updatedAt: Date
+    var deletedAt: Date?
 
     enum CodingKeys: String, CodingKey {
         case id, title, content
@@ -70,7 +71,10 @@ struct Memo: Codable, Identifiable, Hashable {
         case orgId = "org_id"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
     }
+
+    var isDeleted: Bool { deletedAt != nil }
 }
 
 // MARK: - Snippet

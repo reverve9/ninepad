@@ -12,7 +12,21 @@ final class MemoService {
         let memos: [Memo] = try await client.from("memos")
             .select()
             .eq("org_id", value: orgId.uuidString)
+            .is("deleted_at", value: nil)
             .order("updated_at", ascending: false)
+            .execute()
+            .value
+        return memos
+    }
+
+    // MARK: - Fetch Deleted (휴지통)
+
+    func fetchDeletedMemos(orgId: UUID) async throws -> [Memo] {
+        let memos: [Memo] = try await client.from("memos")
+            .select()
+            .eq("org_id", value: orgId.uuidString)
+            .not("deleted_at", operator: .is, value: "null")
+            .order("deleted_at", ascending: false)
             .execute()
             .value
         return memos
@@ -51,9 +65,31 @@ final class MemoService {
         return memo
     }
 
-    // MARK: - Delete
+    // MARK: - Soft Delete
 
     func deleteMemo(id: UUID) async throws {
+        _ = try await client.from("memos")
+            .update(["deleted_at": ISO8601DateFormatter().string(from: Date())])
+            .eq("id", value: id.uuidString)
+            .execute()
+    }
+
+    // MARK: - Restore
+
+    func restoreMemo(id: UUID) async throws {
+        // deleted_at을 NULL로 설정하여 복원
+        struct NullUpdate: Encodable {
+            let deleted_at: String? = nil
+        }
+        _ = try await client.from("memos")
+            .update(NullUpdate())
+            .eq("id", value: id.uuidString)
+            .execute()
+    }
+
+    // MARK: - Hard Delete (영구 삭제)
+
+    func permanentlyDeleteMemo(id: UUID) async throws {
         _ = try await client.from("memos")
             .delete()
             .eq("id", value: id.uuidString)
