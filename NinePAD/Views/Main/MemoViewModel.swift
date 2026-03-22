@@ -13,10 +13,14 @@ final class MemoViewModel: ObservableObject {
     private var orgId: UUID?
 
     var filteredMemos: [Memo] {
-        if searchText.isEmpty { return memos }
-        return memos.filter {
+        let filtered = searchText.isEmpty ? memos : memos.filter {
             $0.title.localizedCaseInsensitiveContains(searchText) ||
             $0.content.localizedCaseInsensitiveContains(searchText)
+        }
+        // 핀된 노트 상단, 나머지 updatedAt 순
+        return filtered.sorted { a, b in
+            if a.isPinned != b.isPinned { return a.isPinned }
+            return a.updatedAt > b.updatedAt
         }
     }
 
@@ -75,6 +79,19 @@ final class MemoViewModel: ObservableObject {
             }
         } catch {
             errorMessage = "메모 수정 실패: \(error.localizedDescription)"
+        }
+    }
+
+    // MARK: - Pin Toggle
+
+    func togglePin(id: UUID) async {
+        guard let index = memos.firstIndex(where: { $0.id == id }) else { return }
+        let newPinned = !memos[index].isPinned
+        do {
+            let updated = try await memoService.togglePin(id: id, isPinned: newPinned)
+            memos[index] = updated
+        } catch {
+            errorMessage = "핀 변경 실패: \(error.localizedDescription)"
         }
     }
 

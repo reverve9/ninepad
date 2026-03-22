@@ -4,11 +4,10 @@ struct MemoRowView: View {
     let memo: Memo
     var onTap: () -> Void
     var onDelete: () -> Void
-    var onPin: () -> Void
+    var onTogglePin: () -> Void
 
     @State private var isHovering = false
     @State private var showDeleteConfirm = false
-    @State private var pinned = false
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -26,16 +25,23 @@ struct MemoRowView: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 10) {
-                // 컬러 도트
-                Circle()
-                    .fill(dotColor)
-                    .frame(width: 8, height: 8)
+                // 컬러 도트 (핀이면 pin 아이콘)
+                if memo.isPinned {
+                    Image(systemName: "pin.fill")
+                        .font(.system(size: 8))
+                        .foregroundColor(AppTheme.accent)
+                        .frame(width: 8)
+                } else {
+                    Circle()
+                        .fill(dotColor)
+                        .frame(width: 8, height: 8)
+                }
 
                 // 타이틀 + 미리보기 + 날짜
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Text(memo.title.isEmpty ? "제목 없음" : memo.title)
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.system(size: 13, weight: memo.isPinned ? .semibold : .medium))
                             .foregroundColor(memo.title.isEmpty ? AppTheme.textTertiary : AppTheme.textPrimary)
                             .lineLimit(1)
 
@@ -54,19 +60,13 @@ struct MemoRowView: View {
 
                 // hover 시 액션
                 if isHovering {
-                    Button(action: {
-                        onPin()
-                        withAnimation { pinned = true }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                            withAnimation { pinned = false }
-                        }
-                    }) {
-                        Image(systemName: pinned ? "pin.fill" : "pin")
+                    Button(action: { onTogglePin() }) {
+                        Image(systemName: memo.isPinned ? "pin.slash" : "pin")
                             .font(.system(size: 9))
-                            .foregroundColor(pinned ? AppTheme.success : AppTheme.textTertiary)
+                            .foregroundColor(memo.isPinned ? AppTheme.textTertiary : AppTheme.accent)
                     }
                     .buttonStyle(.plain)
-                    .disabled(pinned)
+                    .help(memo.isPinned ? "핀 해제" : "핀 고정")
 
                     Button(action: { showDeleteConfirm = true }) {
                         Image(systemName: "xmark")

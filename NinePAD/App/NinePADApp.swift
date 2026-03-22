@@ -183,15 +183,6 @@ struct MemoWindowView: View {
                     onDelete: {
                         Task { try? await memoService.deleteMemo(id: memo.id) }
                     },
-                    onPinToSnippet: {
-                        if let user = authService.currentUser, let orgId = user.orgId {
-                            Task {
-                                _ = try? await SnippetService().createSnippet(
-                                    userId: user.id, orgId: orgId, title: memo.title, content: memo.content
-                                )
-                            }
-                        }
-                    },
                     onPush: {
                         Task { try? await GitService.pushMemo(memo) }
                     }

@@ -65,6 +65,22 @@ final class MemoService {
         return memo
     }
 
+    // MARK: - Pin Toggle
+
+    func togglePin(id: UUID, isPinned: Bool) async throws -> Memo {
+        struct PinUpdate: Encodable {
+            let is_pinned: Bool
+        }
+        let memo: Memo = try await client.from("memos")
+            .update(PinUpdate(is_pinned: isPinned))
+            .eq("id", value: id.uuidString)
+            .select()
+            .single()
+            .execute()
+            .value
+        return memo
+    }
+
     // MARK: - Soft Delete
 
     func deleteMemo(id: UUID) async throws {

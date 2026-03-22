@@ -2,7 +2,6 @@ import SwiftUI
 
 struct MemoZoneView: View {
     @EnvironmentObject var authService: AuthService
-    @ObservedObject var snippetViewModel: SnippetViewModel
     @StateObject private var viewModel = MemoViewModel()
     // 새 노트는 독립 Window로 열림
     @Environment(\.openWindow) var openWindow
@@ -51,9 +50,7 @@ struct MemoZoneView: View {
                                 openWindow(value: memo.id)
                             },
                             onDelete: { Task { await viewModel.deleteMemo(id: memo.id) } },
-                            onPin: {
-                                Task { await snippetViewModel.createFromMemo(title: memo.title, content: memo.content) }
-                            }
+                            onTogglePin: { Task { await viewModel.togglePin(id: memo.id) } }
                         )
                     }
                 }

@@ -2,31 +2,16 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var authService: AuthService
-    @StateObject private var snippetViewModel = SnippetViewModel()
     @State private var showSettings = false
 
     var body: some View {
         VStack(spacing: 0) {
-            // 스니펫 존
-            SnippetZoneView(viewModel: snippetViewModel)
-
-            Divider().background(AppTheme.border)
-
-            // 메모 존
-            MemoZoneView(snippetViewModel: snippetViewModel)
+            MemoZoneView()
 
             Divider().background(AppTheme.border)
 
             // 하단 툴바
             bottomToolbar
-        }
-        .onAppear {
-            if let user = authService.currentUser, let orgId = user.orgId {
-                snippetViewModel.setup(userId: user.id, orgId: orgId)
-            }
-        }
-        .onDisappear {
-            Task { await snippetViewModel.stopRealtime() }
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
