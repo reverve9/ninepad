@@ -18,6 +18,8 @@ struct ContentView: View {
             Group {
                 if authService.currentUser == nil {
                     loadingView
+                } else if authService.currentUser!.isSuperAdmin && authService.currentUser!.orgId == nil {
+                    superAdminSetupView
                 } else if authService.currentUser!.isSuperAdmin {
                     MainView()
                 } else if orgStatus == .approved {
@@ -129,6 +131,72 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    // MARK: - Super Admin Setup
+
+    @State private var newOrgName = ""
+    @State private var isCreatingOrg = false
+
+    private var superAdminSetupView: some View {
+        VStack(spacing: 20) {
+            Spacer()
+
+            Image(systemName: "building.2")
+                .font(.system(size: 36, weight: .thin))
+                .foregroundColor(AppTheme.accent)
+
+            Text("내 Org 만들기")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(AppTheme.textPrimary)
+
+            Text("메모와 스니펫을 사용하려면\nOrg가 필요합니다.")
+                .font(.system(size: 13))
+                .foregroundColor(AppTheme.textSecondary)
+                .multilineTextAlignment(.center)
+
+            NinePADField(label: "조직 이름", placeholder: "예: Nineworx", text: $newOrgName)
+                .padding(.horizontal, 60)
+
+            NinePADButton(title: isCreatingOrg ? "생성 중..." : "Org 생성", isLoading: isCreatingOrg) {
+                Task { await createOrgForSuperAdmin() }
+            }
+            .disabled(newOrgName.isEmpty || isCreatingOrg)
+            .padding(.horizontal, 60)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func createOrgForSuperAdmin() async {
+        guard let user = authService.currentUser else { return }
+        let client = SupabaseManager.shared.client
+        isCreatingOrg = true
+        do {
+            // Org 생성 (approved 상태)
+            let org: Organization = try await client.from("organizations")
+                .insert(["name": newOrgName, "status": "approved"])
+                .select()
+                .single()
+                .execute()
+                .value
+
+            // 슈퍼어드민의 org_id 업데이트
+            let updated: AppUser = try await client.from("users")
+                .update(["org_id": org.id.uuidString])
+                .eq("id", value: user.id.uuidString)
+                .select()
+                .single()
+                .execute()
+                .value
+
+            authService.currentUser = updated
+            orgStatus = .approved
+        } catch {
+            authService.errorMessage = "Org 생성 실패: \(error.localizedDescription)"
+        }
+        isCreatingOrg = false
+    }
+
     // MARK: - Loading
 
     private var loadingView: some View {
@@ -147,8 +215,13 @@ struct ContentView: View {
 
     private func checkOrgStatus() async {
         guard let user = authService.currentUser else { return }
-        if user.isSuperAdmin {
+        if user.isSuperAdmin && user.orgId != nil {
             orgStatus = .approved
+            return
+        }
+        if user.isSuperAdmin && user.orgId == nil {
+            // Org 없는 슈퍼어드민 → setup 화면
+            orgStatus = nil
             return
         }
         guard let orgId = user.orgId else {
