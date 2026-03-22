@@ -58,11 +58,11 @@ struct LoginView: View {
     private var header: some View {
         VStack(spacing: 8) {
             Image(systemName: "note.text.badge.plus")
-                .font(.system(size: 48))
+                .font(.system(size: 32, weight: .thin))
                 .foregroundColor(AppTheme.accent)
-                .frame(width: 72, height: 72)
+                .frame(width: 56, height: 56)
                 .background(AppTheme.accentLight)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
 
             Text(AppConfig.appName)
                 .font(.system(size: 22, weight: .bold))
