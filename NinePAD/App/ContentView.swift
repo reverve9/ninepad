@@ -4,36 +4,33 @@ struct ContentView: View {
     @EnvironmentObject var authService: AuthService
     @Environment(\.openWindow) var openWindow
     @State private var orgStatus: OrgStatus?
+    @State private var isCheckingStatus = false
 
     private let orgService = OrgService()
 
     var body: some View {
         Group {
-            if authService.currentSession != nil {
-                if let user = authService.currentUser {
-                    if user.isSuperAdmin {
-                        // 슈퍼어드민: 바로 메인 (org 없이)
-                        loggedInContent
-                    } else if orgStatus == .approved {
-                        loggedInContent
-                    } else if orgStatus == .pending {
-                        pendingView
-                    } else if orgStatus == .rejected {
-                        rejectedView
-                    } else {
-                        loadingView
-                    }
-                } else {
-                    loadingView
-                }
-            } else {
+            if authService.currentSession == nil {
                 notLoggedInView
+            } else if authService.currentUser == nil {
+                loadingView
+            } else if authService.currentUser!.isSuperAdmin {
+                loggedInContent
+            } else if orgStatus == .approved {
+                loggedInContent
+            } else if orgStatus == .pending {
+                pendingView
+            } else if orgStatus == .rejected {
+                rejectedView
+            } else if isCheckingStatus {
+                loadingView
+            } else {
+                // orgStatus가 nil이고 체크도 끝남 → 다시 체크
+                loadingView
+                    .task { await checkOrgStatus() }
             }
         }
-        .task {
-            await checkOrgStatus()
-        }
-        .onChange(of: authService.currentUser?.orgId) { _, _ in
+        .onChange(of: authService.currentUser?.id) { _, _ in
             Task { await checkOrgStatus() }
         }
     }
@@ -168,11 +165,13 @@ struct ContentView: View {
             orgStatus = nil
             return
         }
+        isCheckingStatus = true
         do {
             let org = try await orgService.fetchOrganization(orgId: orgId)
             orgStatus = org.status
         } catch {
             orgStatus = nil
         }
+        isCheckingStatus = false
     }
 }

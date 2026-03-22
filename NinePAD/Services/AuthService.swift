@@ -231,7 +231,9 @@ final class AuthService: ObservableObject {
                 .execute()
                 .value
             self.currentUser = user
+            print("[Auth] 프로필 로드 성공: \(user.email), role=\(user.role.rawValue), orgId=\(String(describing: user.orgId))")
         } catch {
+            print("[Auth] 프로필 로드 실패: \(error.localizedDescription)")
             // RLS로 인해 프로필 로드 실패 시 세션 이메일로 최소 정보 생성
             if let session = currentSession {
                 self.currentUser = AppUser(
@@ -241,8 +243,7 @@ final class AuthService: ObservableObject {
                     role: .member,
                     createdAt: Date()
                 )
-            }
-            print("프로필 로드 실패 (fallback 사용): \(error.localizedDescription)")
+                print("[Auth] fallback 유저 생성: \(session.user.email ?? "unknown"), role=member")
         }
     }
 }
